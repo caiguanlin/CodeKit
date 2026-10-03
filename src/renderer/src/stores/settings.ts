@@ -3,7 +3,6 @@ import { ref } from 'vue'
 
 export const useSettingsStore = defineStore('settings', () => {
   const theme = ref<'dark' | 'light'>('dark')
-  const isAlwaysOnTop = ref(false)
   const isSidebarCollapsed = ref(false)
   const isCommandPaletteOpen = ref(false)
 
@@ -27,9 +26,6 @@ export const useSettingsStore = defineStore('settings', () => {
         theme.value = savedTheme
       }
 
-      const savedTop = await window.electronAPI.isAlwaysOnTop()
-      isAlwaysOnTop.value = savedTop
-
       const savedSidebar = await window.electronAPI.getStore('isSidebarCollapsed', false)
       isSidebarCollapsed.value = savedSidebar
     }
@@ -47,15 +43,6 @@ export const useSettingsStore = defineStore('settings', () => {
   async function toggleTheme(): Promise<void> {
     const next = theme.value === 'dark' ? 'light' : 'dark'
     await setTheme(next)
-  }
-
-  async function toggleAlwaysOnTop(): Promise<void> {
-    if (window.electronAPI) {
-      const newState = await window.electronAPI.toggleAlwaysOnTop()
-      isAlwaysOnTop.value = newState
-    } else {
-      isAlwaysOnTop.value = !isAlwaysOnTop.value
-    }
   }
 
   function toggleSidebar(): void {
@@ -79,13 +66,11 @@ export const useSettingsStore = defineStore('settings', () => {
 
   return {
     theme,
-    isAlwaysOnTop,
     isSidebarCollapsed,
     isCommandPaletteOpen,
     init,
     setTheme,
     toggleTheme,
-    toggleAlwaysOnTop,
     toggleSidebar,
     openCommandPalette,
     closeCommandPalette,

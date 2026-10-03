@@ -31,21 +31,6 @@ export function registerIpcHandlers(): void {
     return win?.isMaximized() ?? false
   })
 
-  ipcMain.handle('window:toggleAlwaysOnTop', (event) => {
-    const win = BrowserWindow.fromWebContents(event.sender)
-    if (win) {
-      const current = win.isAlwaysOnTop()
-      win.setAlwaysOnTop(!current)
-      return !current
-    }
-    return false
-  })
-
-  ipcMain.handle('window:isAlwaysOnTop', (event) => {
-    const win = BrowserWindow.fromWebContents(event.sender)
-    return win?.isAlwaysOnTop() ?? false
-  })
-
   // 本地配置存储
   ipcMain.handle('store:get', (_event, key: string, defaultValue?: any) => {
     return store.get(key, defaultValue)

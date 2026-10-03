@@ -3,8 +3,6 @@ export interface IElectronAPI {
   maximizeWindow: () => Promise<boolean>
   closeWindow: () => Promise<void>
   isMaximized: () => Promise<boolean>
-  toggleAlwaysOnTop: () => Promise<boolean>
-  isAlwaysOnTop: () => Promise<boolean>
   onMaximizedChange?: (callback: (isMax: boolean) => void) => () => void
 
   getStore: (key: string, defaultValue?: any) => Promise<any>

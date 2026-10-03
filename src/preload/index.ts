@@ -7,8 +7,6 @@ const electronAPI = {
   maximizeWindow: (): Promise<boolean> => ipcRenderer.invoke('window:maximize'),
   closeWindow: (): Promise<void> => ipcRenderer.invoke('window:close'),
   isMaximized: (): Promise<boolean> => ipcRenderer.invoke('window:isMaximized'),
-  toggleAlwaysOnTop: (): Promise<boolean> => ipcRenderer.invoke('window:toggleAlwaysOnTop'),
-  isAlwaysOnTop: (): Promise<boolean> => ipcRenderer.invoke('window:isAlwaysOnTop'),
   onMaximizedChange: (callback: (isMax: boolean) => void): (() => void) => {
     const handler = (_event: any, isMax: boolean) => callback(isMax)
     ipcRenderer.on('window:maximized-change', handler)

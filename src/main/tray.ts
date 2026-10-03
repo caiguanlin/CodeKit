@@ -23,7 +23,6 @@ export function setupTray(): Tray {
   const updateContextMenu = (): void => {
     const win = getMainWindow()
     const isVisible = win?.isVisible() ?? false
-    const isTop = win?.isAlwaysOnTop() ?? false
 
     const contextMenu = Menu.buildFromTemplate([
       {
@@ -36,16 +35,6 @@ export function setupTray(): Tray {
             win.show()
             win.focus()
           }
-          updateContextMenu()
-        }
-      },
-      {
-        label: isTop ? '取消窗口置顶' : '窗口置顶',
-        type: 'checkbox',
-        checked: isTop,
-        click: () => {
-          if (!win) return
-          win.setAlwaysOnTop(!isTop)
           updateContextMenu()
         }
       },
