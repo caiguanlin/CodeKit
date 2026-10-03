@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 export const useToolStore = defineStore('tools', () => {
   const recentTools = ref<string[]>(['codec', 'timestamp', 'json'])
-  const activeToolId = ref<string>('codec')
+  const activeToolId = ref<string>('')
 
   async function init(): Promise<void> {
     if (window.electronAPI) {

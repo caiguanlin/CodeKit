@@ -176,6 +176,7 @@ function navigate(direction: number): void {
 
 function selectTool(tool: ToolMetadata): void {
   if (tool.id === 'settings') {
+    toolStore.activeToolId = ''
     router.push('/settings')
   } else {
     toolStore.setActiveTool(tool.id)

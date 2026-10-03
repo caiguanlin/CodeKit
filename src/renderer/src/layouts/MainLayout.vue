@@ -26,66 +26,27 @@
       </div>
 
       <!-- 工具列表滚动区域 -->
-      <div class="flex-1 min-h-0 overflow-y-auto px-2 py-3 space-y-4">
-        <!-- 常用工具（最近打开的三个工具） -->
-        <div v-if="recentToolsList.length > 0">
-          <div v-if="!settingsStore.isSidebarCollapsed" class="px-2 mb-1.5 text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
-            常用工具
+      <div class="flex-1 min-h-0 overflow-y-auto px-2 py-3 space-y-0.5">
+        <button
+          v-for="tool in TOOLS"
+          :key="tool.id"
+          type="button"
+          @click="navigateToTool(tool)"
+          class="w-full flex items-center rounded-md text-xs transition-colors cursor-pointer"
+          :class="[
+            settingsStore.isSidebarCollapsed ? 'justify-center p-1.5' : 'px-2.5 py-1.5',
+            isToolActive(tool.id) ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-medium' : 'text-zinc-600 hover:text-zinc-900 hover:bg-black/5 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-200'
+          ]"
+          :title="tool.name"
+        >
+          <div
+            class="w-5 h-5 rounded flex items-center justify-center font-bold text-[10px] shrink-0"
+            :style="{ backgroundColor: `${tool.accentColor}25`, color: tool.accentColor }"
+          >
+            {{ tool.shortName.slice(0, 1) }}
           </div>
-          <div v-else class="my-1.5 mx-auto w-6 border-t border-[var(--border-sub-color)]"></div>
-          <div class="space-y-0.5">
-            <button
-              v-for="tool in recentToolsList"
-              :key="tool.id"
-              type="button"
-              @click="navigateToTool(tool)"
-              class="w-full flex items-center rounded-md text-xs transition-colors cursor-pointer"
-              :class="[
-                settingsStore.isSidebarCollapsed ? 'justify-center p-1.5' : 'px-2.5 py-1.5',
-                toolStore.activeToolId === tool.id ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-medium' : 'text-zinc-600 hover:text-zinc-900 hover:bg-black/5 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-200'
-              ]"
-              :title="tool.name"
-            >
-              <div
-                class="w-5 h-5 rounded flex items-center justify-center font-bold text-[10px] shrink-0"
-                :style="{ backgroundColor: `${tool.accentColor}25`, color: tool.accentColor }"
-              >
-                {{ tool.shortName.slice(0, 1) }}
-              </div>
-              <span v-if="!settingsStore.isSidebarCollapsed" class="ml-2.5 truncate text-left">{{ tool.name }}</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 按分类列出全部工具 -->
-        <div v-for="cat in TOOL_CATEGORIES" :key="cat.key">
-          <div v-if="!settingsStore.isSidebarCollapsed" class="px-2 mb-1.5 text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
-            {{ cat.name }}
-          </div>
-          <div v-else class="my-1.5 mx-auto w-6 border-t border-[var(--border-sub-color)]"></div>
-          <div class="space-y-0.5">
-            <button
-              v-for="tool in getToolsByCategory(cat.key)"
-              :key="tool.id"
-              type="button"
-              @click="navigateToTool(tool)"
-              class="w-full flex items-center rounded-md text-xs transition-colors cursor-pointer"
-              :class="[
-                settingsStore.isSidebarCollapsed ? 'justify-center p-1.5' : 'px-2.5 py-1.5',
-                toolStore.activeToolId === tool.id ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-medium' : 'text-zinc-600 hover:text-zinc-900 hover:bg-black/5 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-200'
-              ]"
-              :title="tool.name"
-            >
-              <div
-                class="w-5 h-5 rounded flex items-center justify-center font-bold text-[10px] shrink-0"
-                :style="{ backgroundColor: `${tool.accentColor}25`, color: tool.accentColor }"
-              >
-                {{ tool.shortName.slice(0, 1) }}
-              </div>
-              <span v-if="!settingsStore.isSidebarCollapsed" class="ml-2.5 truncate text-left">{{ tool.name }}</span>
-            </button>
-          </div>
-        </div>
+          <span v-if="!settingsStore.isSidebarCollapsed" class="ml-2.5 truncate text-left">{{ tool.name }}</span>
+        </button>
       </div>
 
       <!-- 侧边栏底部：本地隐私安全标识与设置菜单项（固定在最底部） -->
@@ -149,7 +110,7 @@ import { computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSettingsStore } from '@/stores/settings'
 import { useToolStore } from '@/stores/tools'
-import { TOOLS, TOOL_CATEGORIES, getToolsByCategory, getToolById } from '@/registry'
+import { TOOLS } from '@/registry'
 import type { ToolMetadata } from '@/types/tool'
 
 const router = useRouter()
@@ -157,15 +118,14 @@ const route = useRoute()
 const settingsStore = useSettingsStore()
 const toolStore = useToolStore()
 
-// 常用工具：显示最近打开的三个工具
-const recentToolsList = computed(() => {
-  return toolStore.recentTools
-    .slice(0, 3)
-    .map((id) => getToolById(id))
-    .filter((tool): tool is ToolMetadata => Boolean(tool))
-})
-
 const isSettingsActive = computed(() => route.path === '/settings')
+
+function isToolActive(toolId: string): boolean {
+  if (isSettingsActive.value) {
+    return false
+  }
+  return toolStore.activeToolId === toolId
+}
 
 // 监听路由变化，自动记录当前打开的工具
 watch(
@@ -174,6 +134,8 @@ watch(
     const matched = TOOLS.find((t) => t.route === path)
     if (matched) {
       toolStore.setActiveTool(matched.id)
+    } else {
+      toolStore.activeToolId = ''
     }
   },
   { immediate: true }
@@ -185,6 +147,7 @@ function navigateToTool(tool: ToolMetadata): void {
 }
 
 function navigateToSettings(): void {
+  toolStore.activeToolId = ''
   router.push('/settings')
 }
 
