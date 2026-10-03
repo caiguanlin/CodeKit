@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col space-y-3">
     <!-- 顶部功能模式切换 -->
-    <div class="px-3 py-2 rounded-lg bg-[#18181c] border border-[#27272a]">
+    <div class="px-3 py-2 rounded-lg bg-[var(--card-bg)] border border-[var(--border-color)] transition-colors">
       <n-tabs v-model:value="activeTab" type="segment" size="small">
         <n-tab name="diff">双栏 Diff 差异对比</n-tab>
         <n-tab name="regex">正则表达式测试</n-tab>
@@ -11,12 +11,12 @@
     </div>
 
     <!-- 主工作区 -->
-    <div class="flex-1 flex flex-col min-h-0 bg-[#18181c] border border-[#27272a] rounded-xl p-4 overflow-hidden">
+    <div class="flex-1 flex flex-col min-h-0 bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl p-4 overflow-hidden transition-colors">
       <!-- 模块 1: Monaco 双栏 Diff 文本对比 -->
       <div v-if="activeTab === 'diff'" class="h-full flex flex-col space-y-2">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
-            <span class="text-xs text-zinc-400">对比语言:</span>
+            <span class="text-xs text-zinc-500 dark:text-zinc-400">对比语言:</span>
             <n-select v-model:value="diffLanguage" size="small" :options="languageOptions" class="w-32" />
             <n-switch v-model:value="sideBySide" size="small">
               <template #checked>双栏分栏</template>
@@ -43,8 +43,8 @@
       <!-- 模块 2: 正则表达式实时测试器 -->
       <div v-else-if="activeTab === 'regex'" class="h-full flex flex-col space-y-4 overflow-y-auto pr-1">
         <!-- 常用预设快捷按钮 -->
-        <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] flex items-center flex-wrap gap-2 text-xs">
-          <span class="text-zinc-400">常用预设:</span>
+        <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] flex items-center flex-wrap gap-2 text-xs transition-colors">
+          <span class="text-zinc-500 dark:text-zinc-400">常用预设:</span>
           <n-button
             v-for="preset in regexPresets"
             :key="preset.name"
@@ -57,16 +57,16 @@
         </div>
 
         <!-- 正则输入与标志位 -->
-        <div class="p-4 rounded-lg bg-[#202026] border border-[#2a2a34] space-y-3">
+        <div class="p-4 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-3 transition-colors">
           <div class="flex items-center space-x-3">
-            <span class="text-emerald-400 font-mono text-lg font-bold">/</span>
+            <span class="text-emerald-500 dark:text-emerald-400 font-mono text-lg font-bold">/</span>
             <n-input
               v-model:value="regexPattern"
               placeholder="输入正则表达式规则，例如: (\d{4})-(\d{2})-(\d{2})"
               class="font-mono"
               @update:value="testRegex"
             />
-            <span class="text-emerald-400 font-mono text-lg font-bold">/</span>
+            <span class="text-emerald-500 dark:text-emerald-400 font-mono text-lg font-bold">/</span>
             <n-input
               v-model:value="regexFlags"
               placeholder="flags (g, i, m, s)"
@@ -75,7 +75,7 @@
             />
           </div>
 
-          <div class="flex items-center space-x-4 text-xs text-zinc-400">
+          <div class="flex items-center space-x-4 text-xs text-zinc-500 dark:text-zinc-400">
             <n-checkbox v-model:checked="flagG" @update:checked="syncFlags">全局匹配 (g)</n-checkbox>
             <n-checkbox v-model:checked="flagI" @update:checked="syncFlags">忽略大小写 (i)</n-checkbox>
             <n-checkbox v-model:checked="flagM" @update:checked="syncFlags">多行模式 (m)</n-checkbox>
@@ -86,7 +86,7 @@
         <!-- 待匹配文本与结果 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
           <div class="space-y-1">
-            <div class="text-xs text-zinc-400 font-medium">测试文本 (Test String)</div>
+            <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">测试文本 (Test String)</div>
             <n-input
               v-model:value="regexText"
               type="textarea"
@@ -97,25 +97,25 @@
           </div>
 
           <div class="space-y-1">
-            <div class="flex items-center justify-between text-xs text-zinc-400 font-medium">
+            <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 font-medium">
               <span>匹配结果 ({{ matches.length }} 处命中)</span>
-              <span v-if="regexError" class="text-red-400">{{ regexError }}</span>
+              <span v-if="regexError" class="text-red-500 dark:text-red-400">{{ regexError }}</span>
             </div>
-            <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] h-60 overflow-y-auto space-y-2 text-xs font-mono">
+            <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] h-60 overflow-y-auto space-y-2 text-xs font-mono transition-colors">
               <template v-if="matches.length > 0">
                 <div
                   v-for="(m, idx) in matches"
                   :key="idx"
-                  class="p-2 rounded bg-[#18181c] border border-[#2e2e38] text-zinc-200"
+                  class="p-2 rounded bg-[var(--card-bg)] border border-[var(--border-color)] text-zinc-800 dark:text-zinc-200"
                 >
-                  <div class="text-emerald-400 font-bold">#{{ idx + 1 }}: "{{ m.match }}"</div>
-                  <div class="text-[11px] text-zinc-400 mt-0.5">位置: [{{ m.index }} ~ {{ m.index + m.match.length }}]</div>
-                  <div v-if="m.groups && m.groups.length > 0" class="text-[11px] text-blue-400 mt-1 space-y-0.5">
+                  <div class="text-emerald-600 dark:text-emerald-400 font-bold">#{{ idx + 1 }}: "{{ m.match }}"</div>
+                  <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">位置: [{{ m.index }} ~ {{ m.index + m.match.length }}]</div>
+                  <div v-if="m.groups && m.groups.length > 0" class="text-[11px] text-blue-500 dark:text-blue-400 mt-1 space-y-0.5">
                     <div v-for="(g, gIdx) in m.groups" :key="gIdx">捕获组 {{ gIdx + 1 }}: "{{ g }}"</div>
                   </div>
                 </div>
               </template>
-              <div v-else class="h-full flex items-center justify-center text-zinc-500">
+              <div v-else class="h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
                 {{ regexPattern ? '无匹配内容' : '请输入正则表达式与测试文本' }}
               </div>
             </div>
@@ -126,7 +126,7 @@
       <!-- 模块 3: 命名规范转换 -->
       <div v-else-if="activeTab === 'naming'" class="space-y-4 overflow-y-auto">
         <div class="space-y-1">
-          <div class="text-xs text-zinc-400 font-medium">输入源文本 (支持多种格式)</div>
+          <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">输入源文本 (支持多种格式)</div>
           <n-input
             v-model:value="namingInput"
             placeholder="例如: hello_world, getUserProfile, user-login-record..."
@@ -135,52 +135,52 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] space-y-1">
-            <div class="flex items-center justify-between text-zinc-400">
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
+            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
               <span>camelCase (小驼峰):</span>
               <n-button size="tiny" secondary @click="copy(namingResults.camel)">复制</n-button>
             </div>
-            <div class="font-mono font-bold text-emerald-400 select-all">{{ namingResults.camel || '-' }}</div>
+            <div class="font-mono font-bold text-emerald-600 dark:text-emerald-400 select-all">{{ namingResults.camel || '-' }}</div>
           </div>
 
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] space-y-1">
-            <div class="flex items-center justify-between text-zinc-400">
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
+            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
               <span>PascalCase (大驼峰):</span>
               <n-button size="tiny" secondary @click="copy(namingResults.pascal)">复制</n-button>
             </div>
-            <div class="font-mono font-bold text-blue-400 select-all">{{ namingResults.pascal || '-' }}</div>
+            <div class="font-mono font-bold text-blue-600 dark:text-blue-400 select-all">{{ namingResults.pascal || '-' }}</div>
           </div>
 
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] space-y-1">
-            <div class="flex items-center justify-between text-zinc-400">
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
+            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
               <span>snake_case (下划线):</span>
               <n-button size="tiny" secondary @click="copy(namingResults.snake)">复制</n-button>
             </div>
-            <div class="font-mono font-bold text-amber-400 select-all">{{ namingResults.snake || '-' }}</div>
+            <div class="font-mono font-bold text-amber-600 dark:text-amber-400 select-all">{{ namingResults.snake || '-' }}</div>
           </div>
 
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] space-y-1">
-            <div class="flex items-center justify-between text-zinc-400">
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
+            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
               <span>kebab-case (中划线):</span>
               <n-button size="tiny" secondary @click="copy(namingResults.kebab)">复制</n-button>
             </div>
-            <div class="font-mono font-bold text-purple-400 select-all">{{ namingResults.kebab || '-' }}</div>
+            <div class="font-mono font-bold text-purple-600 dark:text-purple-400 select-all">{{ namingResults.kebab || '-' }}</div>
           </div>
 
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] space-y-1">
-            <div class="flex items-center justify-between text-zinc-400">
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
+            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
               <span>CONSTANT_CASE (全大写常量):</span>
               <n-button size="tiny" secondary @click="copy(namingResults.constant)">复制</n-button>
             </div>
-            <div class="font-mono font-bold text-red-400 select-all">{{ namingResults.constant || '-' }}</div>
+            <div class="font-mono font-bold text-red-600 dark:text-red-400 select-all">{{ namingResults.constant || '-' }}</div>
           </div>
 
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] space-y-1">
-            <div class="flex items-center justify-between text-zinc-400">
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
+            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
               <span>UPPERCASE (全大写):</span>
               <n-button size="tiny" secondary @click="copy(namingResults.upper)">复制</n-button>
             </div>
-            <div class="font-mono font-bold text-zinc-200 select-all">{{ namingResults.upper || '-' }}</div>
+            <div class="font-mono font-bold text-zinc-800 dark:text-zinc-200 select-all">{{ namingResults.upper || '-' }}</div>
           </div>
         </div>
       </div>
@@ -197,25 +197,25 @@
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34]">
-            <div class="text-zinc-400 text-[11px]">字符总数 (含空格)</div>
-            <div class="font-mono font-bold text-lg text-emerald-400 mt-1">{{ statsTotalChars }}</div>
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+            <div class="text-zinc-500 dark:text-zinc-400 text-[11px]">字符总数 (含空格)</div>
+            <div class="font-mono font-bold text-lg text-emerald-600 dark:text-emerald-400 mt-1">{{ statsTotalChars }}</div>
           </div>
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34]">
-            <div class="text-zinc-400 text-[11px]">字符数 (不含空格)</div>
-            <div class="font-mono font-bold text-lg text-blue-400 mt-1">{{ statsCharsNoSpace }}</div>
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+            <div class="text-zinc-500 dark:text-zinc-400 text-[11px]">字符数 (不含空格)</div>
+            <div class="font-mono font-bold text-lg text-blue-600 dark:text-blue-400 mt-1">{{ statsCharsNoSpace }}</div>
           </div>
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34]">
-            <div class="text-zinc-400 text-[11px]">词数 (Words)</div>
-            <div class="font-mono font-bold text-lg text-indigo-400 mt-1">{{ statsWordCount }}</div>
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+            <div class="text-zinc-500 dark:text-zinc-400 text-[11px]">词数 (Words)</div>
+            <div class="font-mono font-bold text-lg text-indigo-600 dark:text-indigo-400 mt-1">{{ statsWordCount }}</div>
           </div>
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34]">
-            <div class="text-zinc-400 text-[11px]">总行数</div>
-            <div class="font-mono font-bold text-lg text-amber-400 mt-1">{{ statsLineCount }}</div>
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+            <div class="text-zinc-500 dark:text-zinc-400 text-[11px]">总行数</div>
+            <div class="font-mono font-bold text-lg text-amber-600 dark:text-amber-400 mt-1">{{ statsLineCount }}</div>
           </div>
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34]">
-            <div class="text-zinc-400 text-[11px]">字节大小 (UTF-8)</div>
-            <div class="font-mono font-bold text-lg text-purple-400 mt-1">{{ statsByteSize }} B</div>
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+            <div class="text-zinc-500 dark:text-zinc-400 text-[11px]">字节大小 (UTF-8)</div>
+            <div class="font-mono font-bold text-lg text-purple-600 dark:text-purple-400 mt-1">{{ statsByteSize }} B</div>
           </div>
         </div>
       </div>

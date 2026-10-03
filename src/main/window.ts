@@ -16,7 +16,7 @@ export function createMainWindow(): BrowserWindow {
     minHeight: 640,
     show: false,
     frame: false,
-    titleBarStyle: 'hidden',
+    ...(process.platform === 'darwin' ? { titleBarStyle: 'hidden' } : {}),
     backgroundColor: '#121214',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -29,6 +29,15 @@ export function createMainWindow(): BrowserWindow {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show()
+  })
+
+  // 监听窗口最大化与还原事件，向渲染进程精准同步状态
+  mainWindow.on('maximize', () => {
+    mainWindow?.webContents.send('window:maximized-change', true)
+  })
+
+  mainWindow.on('unmaximize', () => {
+    mainWindow?.webContents.send('window:maximized-change', false)
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

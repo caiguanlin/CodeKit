@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col space-y-3">
     <!-- 顶部编解码模式切换 -->
-    <div class="px-3 py-2 rounded-lg bg-[#18181c] border border-[#27272a]">
+    <div class="px-3 py-2 rounded-lg bg-[var(--card-bg)] border border-[var(--border-color)] transition-colors">
       <n-tabs v-model:value="activeTab" type="segment" size="small">
         <n-tab name="base64">Base64</n-tab>
         <n-tab name="url">URL 编码</n-tab>
@@ -12,7 +12,7 @@
     </div>
 
     <!-- 主操作区域 -->
-    <div class="flex-1 flex flex-col min-h-0 bg-[#18181c] border border-[#27272a] rounded-xl p-4 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-h-0 bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl p-4 overflow-y-auto transition-colors">
       <!-- 模式 1: Base64 -->
       <div v-if="activeTab === 'base64'" class="space-y-4">
         <div class="flex items-center justify-between">
@@ -29,7 +29,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-1">
-            <div class="text-xs text-zinc-400 font-medium">输入原始内容</div>
+            <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">输入原始内容</div>
             <n-input
               v-model:value="base64Input"
               type="textarea"
@@ -38,7 +38,7 @@
             />
           </div>
           <div class="space-y-1">
-            <div class="text-xs text-zinc-400 font-medium">输出转换结果</div>
+            <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">输出转换结果</div>
             <n-input
               v-model:value="base64Output"
               type="textarea"
@@ -66,7 +66,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-1">
-            <div class="text-xs text-zinc-400 font-medium">输入 URL 或字符串</div>
+            <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">输入 URL 或字符串</div>
             <n-input
               v-model:value="urlInput"
               type="textarea"
@@ -75,7 +75,7 @@
             />
           </div>
           <div class="space-y-1">
-            <div class="text-xs text-zinc-400 font-medium">输出结果</div>
+            <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">输出结果</div>
             <n-input
               v-model:value="urlOutput"
               type="textarea"
@@ -91,14 +91,14 @@
       <div v-else-if="activeTab === 'hash'" class="space-y-4">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
-            <span class="text-xs text-zinc-400">大写输出:</span>
+            <span class="text-xs text-zinc-500 dark:text-zinc-400">大写输出:</span>
             <n-switch v-model:value="hashUppercase" size="small" @update:value="calculateHashes" />
           </div>
           <n-button size="small" quaternary @click="clearHash">清空输入</n-button>
         </div>
 
         <div class="space-y-1">
-          <div class="text-xs text-zinc-400 font-medium">输入文本 (实时计算各类哈希)</div>
+          <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">输入文本 (实时计算各类哈希)</div>
           <n-input
             v-model:value="hashInput"
             type="textarea"
@@ -109,33 +109,33 @@
         </div>
 
         <div class="space-y-2 pt-2 text-xs">
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] space-y-1">
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-emerald-400">MD5 (128-bit)</span>
+              <span class="font-bold text-emerald-600 dark:text-emerald-400">MD5 (128-bit)</span>
               <n-button size="tiny" secondary @click="copy(hashResults.md5)">复制</n-button>
             </div>
-            <div class="font-mono text-zinc-200 select-all break-all">{{ hashResults.md5 || '-' }}</div>
+            <div class="font-mono text-zinc-800 dark:text-zinc-200 select-all break-all">{{ hashResults.md5 || '-' }}</div>
           </div>
 
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] space-y-1">
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-blue-400">SHA-1 (160-bit)</span>
+              <span class="font-bold text-blue-600 dark:text-blue-400">SHA-1 (160-bit)</span>
               <n-button size="tiny" secondary @click="copy(hashResults.sha1)">复制</n-button>
             </div>
-            <div class="font-mono text-zinc-200 select-all break-all">{{ hashResults.sha1 || '-' }}</div>
+            <div class="font-mono text-zinc-800 dark:text-zinc-200 select-all break-all">{{ hashResults.sha1 || '-' }}</div>
           </div>
 
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] space-y-1">
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-indigo-400">SHA-256 (256-bit)</span>
+              <span class="font-bold text-indigo-600 dark:text-indigo-400">SHA-256 (256-bit)</span>
               <n-button size="tiny" secondary @click="copy(hashResults.sha256)">复制</n-button>
             </div>
-            <div class="font-mono text-zinc-200 select-all break-all">{{ hashResults.sha256 || '-' }}</div>
+            <div class="font-mono text-zinc-800 dark:text-zinc-200 select-all break-all">{{ hashResults.sha256 || '-' }}</div>
           </div>
 
-          <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] space-y-1">
+          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
             <div class="flex items-center justify-between">
-              <span class="font-bold text-purple-400">SHA-512 (512-bit)</span>
+              <span class="font-bold text-purple-600 dark:text-purple-400">SHA-512 (512-bit)</span>
               <n-button size="tiny" secondary @click="copy(hashResults.sha512)">复制</n-button>
             </div>
             <div class="font-mono text-zinc-200 select-all break-all text-[11px]">{{ hashResults.sha512 || '-' }}</div>

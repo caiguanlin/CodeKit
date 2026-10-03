@@ -5,6 +5,7 @@ export interface IElectronAPI {
   isMaximized: () => Promise<boolean>
   toggleAlwaysOnTop: () => Promise<boolean>
   isAlwaysOnTop: () => Promise<boolean>
+  onMaximizedChange?: (callback: (isMax: boolean) => void) => () => void
 
   getStore: (key: string, defaultValue?: any) => Promise<any>
   setStore: (key: string, value: any) => Promise<boolean>

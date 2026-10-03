@@ -1,32 +1,32 @@
 <template>
   <div class="h-full flex flex-col space-y-4 overflow-y-auto pr-1">
     <!-- 实时时钟看板 -->
-    <div class="p-4 rounded-xl bg-[#18181c] border border-[#27272a] flex items-center justify-between flex-wrap gap-4">
+    <div class="p-4 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] flex items-center justify-between flex-wrap gap-4 transition-colors">
       <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold">
+        <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-500 dark:text-blue-400 flex items-center justify-center font-bold">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
         </div>
         <div>
-          <div class="text-xs text-zinc-400 font-medium">当前本地时间与 Unix 时间戳</div>
-          <div class="text-xl font-bold font-mono text-zinc-100 flex items-center space-x-2 mt-0.5">
+          <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">当前本地时间与 Unix 时间戳</div>
+          <div class="text-xl font-bold font-mono text-zinc-900 dark:text-zinc-100 flex items-center space-x-2 mt-0.5">
             <span>{{ liveTimeString }}</span>
           </div>
         </div>
       </div>
 
       <div class="flex items-center space-x-3 flex-wrap gap-2">
-        <div class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#222228] border border-[#2e2e38] font-mono text-xs">
-          <span class="text-zinc-400">秒 (10位):</span>
-          <span class="text-emerald-400 font-bold">{{ liveSeconds }}</span>
+        <div class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] font-mono text-xs transition-colors">
+          <span class="text-zinc-500 dark:text-zinc-400">秒 (10位):</span>
+          <span class="text-emerald-600 dark:text-emerald-400 font-bold">{{ liveSeconds }}</span>
           <n-button size="tiny" secondary @click="copy(String(liveSeconds))">复制</n-button>
         </div>
 
-        <div class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#222228] border border-[#2e2e38] font-mono text-xs">
-          <span class="text-zinc-400">毫秒 (13位):</span>
-          <span class="text-blue-400 font-bold">{{ liveMillis }}</span>
+        <div class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] font-mono text-xs transition-colors">
+          <span class="text-zinc-500 dark:text-zinc-400">毫秒 (13位):</span>
+          <span class="text-blue-600 dark:text-blue-400 font-bold">{{ liveMillis }}</span>
           <n-button size="tiny" secondary @click="copy(String(liveMillis))">复制</n-button>
         </div>
 
@@ -39,14 +39,14 @@
     <!-- 转换器区域：双向转换 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- 卡片 1: 时间戳转日期时间 -->
-      <div class="p-4 rounded-xl bg-[#18181c] border border-[#27272a] space-y-3">
-        <div class="flex items-center justify-between border-b border-[#27272a] pb-2">
-          <span class="text-xs font-semibold text-zinc-200">时间戳 ➔ 北京/本地时间</span>
+      <div class="p-4 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] space-y-3 transition-colors">
+        <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
+          <span class="text-xs font-semibold text-zinc-800 dark:text-zinc-200">时间戳 ➔ 北京/本地时间</span>
           <n-button size="tiny" quaternary @click="tsInput = String(liveSeconds)">填入当前秒</n-button>
         </div>
 
         <div class="space-y-1">
-          <label class="text-[11px] text-zinc-400">输入时间戳 (秒或毫秒)</label>
+          <label class="text-[11px] text-zinc-500 dark:text-zinc-400">输入时间戳 (秒或毫秒)</label>
           <n-input
             v-model:value="tsInput"
             placeholder="例如: 1711234567 或 1711234567890"
@@ -55,37 +55,37 @@
         </div>
 
         <div class="space-y-2 pt-1 text-xs">
-          <div class="flex items-center justify-between p-2 rounded bg-[#202026] border border-[#2a2a34]">
-            <span class="text-zinc-400">本地时间 (Local):</span>
-            <span class="font-mono text-zinc-200 font-medium select-all">{{ convertedLocalDate || '-' }}</span>
+          <div class="flex items-center justify-between p-2 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+            <span class="text-zinc-500 dark:text-zinc-400">本地时间 (Local):</span>
+            <span class="font-mono text-zinc-800 dark:text-zinc-200 font-medium select-all">{{ convertedLocalDate || '-' }}</span>
           </div>
 
-          <div class="flex items-center justify-between p-2 rounded bg-[#202026] border border-[#2a2a34]">
-            <span class="text-zinc-400">标准 UTC 时间:</span>
-            <span class="font-mono text-zinc-200 font-medium select-all">{{ convertedUtcDate || '-' }}</span>
+          <div class="flex items-center justify-between p-2 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+            <span class="text-zinc-500 dark:text-zinc-400">标准 UTC 时间:</span>
+            <span class="font-mono text-zinc-800 dark:text-zinc-200 font-medium select-all">{{ convertedUtcDate || '-' }}</span>
           </div>
 
-          <div class="flex items-center justify-between p-2 rounded bg-[#202026] border border-[#2a2a34]">
-            <span class="text-zinc-400">ISO 8601:</span>
-            <span class="font-mono text-zinc-200 font-medium select-all">{{ convertedIsoDate || '-' }}</span>
+          <div class="flex items-center justify-between p-2 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+            <span class="text-zinc-500 dark:text-zinc-400">ISO 8601:</span>
+            <span class="font-mono text-zinc-800 dark:text-zinc-200 font-medium select-all">{{ convertedIsoDate || '-' }}</span>
           </div>
 
-          <div class="flex items-center justify-between p-2 rounded bg-[#202026] border border-[#2a2a34]">
-            <span class="text-zinc-400">相对时间:</span>
-            <span class="font-mono text-emerald-400 font-medium select-all">{{ convertedRelative || '-' }}</span>
+          <div class="flex items-center justify-between p-2 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+            <span class="text-zinc-500 dark:text-zinc-400">相对时间:</span>
+            <span class="font-mono text-emerald-600 dark:text-emerald-400 font-medium select-all">{{ convertedRelative || '-' }}</span>
           </div>
         </div>
       </div>
 
       <!-- 卡片 2: 日期时间转时间戳 -->
-      <div class="p-4 rounded-xl bg-[#18181c] border border-[#27272a] space-y-3">
-        <div class="flex items-center justify-between border-b border-[#27272a] pb-2">
-          <span class="text-xs font-semibold text-zinc-200">日期时间 ➔ 时间戳</span>
+      <div class="p-4 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] space-y-3 transition-colors">
+        <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
+          <span class="text-xs font-semibold text-zinc-800 dark:text-zinc-200">日期时间 ➔ 时间戳</span>
           <n-button size="tiny" quaternary @click="fillCurrentDate">填入当前时间</n-button>
         </div>
 
         <div class="space-y-1">
-          <label class="text-[11px] text-zinc-400">日期时间字符串 (YYYY-MM-DD HH:mm:ss)</label>
+          <label class="text-[11px] text-zinc-500 dark:text-zinc-400">日期时间字符串 (YYYY-MM-DD HH:mm:ss)</label>
           <n-input
             v-model:value="dateInput"
             placeholder="例如: 2026-10-03 12:00:00"
@@ -94,18 +94,18 @@
         </div>
 
         <div class="space-y-2 pt-1 text-xs">
-          <div class="flex items-center justify-between p-2 rounded bg-[#202026] border border-[#2a2a34]">
-            <span class="text-zinc-400">秒级时间戳 (10位):</span>
+          <div class="flex items-center justify-between p-2 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+            <span class="text-zinc-500 dark:text-zinc-400">秒级时间戳 (10位):</span>
             <div class="flex items-center space-x-2">
-              <span class="font-mono text-emerald-400 font-bold select-all">{{ convertedSeconds || '-' }}</span>
+              <span class="font-mono text-emerald-600 dark:text-emerald-400 font-bold select-all">{{ convertedSeconds || '-' }}</span>
               <n-button v-if="convertedSeconds" size="tiny" secondary @click="copy(String(convertedSeconds))">复制</n-button>
             </div>
           </div>
 
-          <div class="flex items-center justify-between p-2 rounded bg-[#202026] border border-[#2a2a34]">
-            <span class="text-zinc-400">毫秒级时间戳 (13位):</span>
+          <div class="flex items-center justify-between p-2 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+            <span class="text-zinc-500 dark:text-zinc-400">毫秒级时间戳 (13位):</span>
             <div class="flex items-center space-x-2">
-              <span class="font-mono text-blue-400 font-bold select-all">{{ convertedMillis || '-' }}</span>
+              <span class="font-mono text-blue-600 dark:text-blue-400 font-bold select-all">{{ convertedMillis || '-' }}</span>
               <n-button v-if="convertedMillis" size="tiny" secondary @click="copy(String(convertedMillis))">复制</n-button>
             </div>
           </div>
@@ -114,26 +114,26 @@
     </div>
 
     <!-- 常用时间差与时长换算 -->
-    <div class="p-4 rounded-xl bg-[#18181c] border border-[#27272a] space-y-3">
-      <div class="text-xs font-semibold text-zinc-200 border-b border-[#27272a] pb-2">
+    <div class="p-4 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] space-y-3 transition-colors">
+      <div class="text-xs font-semibold text-zinc-800 dark:text-zinc-200 border-b border-[var(--border-color)] pb-2">
         常用时间单位换算参考
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-        <div class="p-2.5 rounded bg-[#202026] border border-[#2a2a34]">
-          <div class="text-zinc-400 text-[11px]">1 分钟 (Minute)</div>
-          <div class="font-mono font-bold text-zinc-100 mt-0.5">60 秒 / 60,000 ms</div>
+        <div class="p-2.5 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+          <div class="text-zinc-500 dark:text-zinc-400 text-[11px]">1 分钟 (Minute)</div>
+          <div class="font-mono font-bold text-zinc-800 dark:text-zinc-100 mt-0.5">60 秒 / 60,000 ms</div>
         </div>
-        <div class="p-2.5 rounded bg-[#202026] border border-[#2a2a34]">
-          <div class="text-zinc-400 text-[11px]">1 小时 (Hour)</div>
-          <div class="font-mono font-bold text-zinc-100 mt-0.5">3,600 秒</div>
+        <div class="p-2.5 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+          <div class="text-zinc-500 dark:text-zinc-400 text-[11px]">1 小时 (Hour)</div>
+          <div class="font-mono font-bold text-zinc-800 dark:text-zinc-100 mt-0.5">3,600 秒</div>
         </div>
-        <div class="p-2.5 rounded bg-[#202026] border border-[#2a2a34]">
-          <div class="text-zinc-400 text-[11px]">1 天 (Day)</div>
-          <div class="font-mono font-bold text-zinc-100 mt-0.5">86,400 秒</div>
+        <div class="p-2.5 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+          <div class="text-zinc-500 dark:text-zinc-400 text-[11px]">1 天 (Day)</div>
+          <div class="font-mono font-bold text-zinc-800 dark:text-zinc-100 mt-0.5">86,400 秒</div>
         </div>
-        <div class="p-2.5 rounded bg-[#202026] border border-[#2a2a34]">
-          <div class="text-zinc-400 text-[11px]">1 周 (Week)</div>
-          <div class="font-mono font-bold text-zinc-100 mt-0.5">604,800 秒</div>
+        <div class="p-2.5 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+          <div class="text-zinc-500 dark:text-zinc-400 text-[11px]">1 周 (Week)</div>
+          <div class="font-mono font-bold text-zinc-800 dark:text-zinc-100 mt-0.5">604,800 秒</div>
         </div>
       </div>
     </div>

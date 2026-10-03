@@ -1,5 +1,5 @@
 <template>
-  <div ref="containerRef" class="w-full h-full relative overflow-hidden rounded-md border border-[#27272a]"></div>
+  <div ref="containerRef" class="w-full h-full relative overflow-hidden rounded-md border border-[var(--border-color)] transition-colors"></div>
 </template>
 
 <script setup lang="ts">

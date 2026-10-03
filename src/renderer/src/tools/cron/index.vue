@@ -1,8 +1,8 @@
 <template>
   <div class="h-full flex flex-col space-y-4 overflow-y-auto pr-1">
     <!-- 常用预设快捷按钮 -->
-    <div class="p-3 rounded-lg bg-[#18181c] border border-[#27272a] flex items-center flex-wrap gap-2 text-xs">
-      <span class="text-zinc-400">常用预设:</span>
+    <div class="p-3 rounded-lg bg-[var(--card-bg)] border border-[var(--border-color)] flex items-center flex-wrap gap-2 text-xs transition-colors">
+      <span class="text-zinc-500 dark:text-zinc-400">常用预设:</span>
       <n-button
         v-for="preset in cronPresets"
         :key="preset.name"
@@ -15,9 +15,9 @@
     </div>
 
     <!-- 表达式输入面板 -->
-    <div class="p-4 rounded-xl bg-[#18181c] border border-[#27272a] space-y-3">
+    <div class="p-4 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] space-y-3 transition-colors">
       <div class="flex items-center justify-between">
-        <span class="text-xs font-semibold text-zinc-200">Cron 表达式 (标准 5段 / 6段)</span>
+        <span class="text-xs font-semibold text-zinc-800 dark:text-zinc-200">Cron 表达式 (标准 5段 / 6段)</span>
         <div class="flex items-center space-x-2">
           <n-button size="tiny" secondary @click="copy(cronExpression)">复制表达式</n-button>
           <n-button size="tiny" quaternary @click="cronExpression = '* * * * *'; parseCron()">重置</n-button>
@@ -34,62 +34,62 @@
       </div>
 
       <!-- 语义化中文解读卡片 -->
-      <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] flex items-center justify-between">
+      <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] flex items-center justify-between transition-colors">
         <div class="flex items-center space-x-2">
-          <span class="text-emerald-400 text-sm">💡</span>
-          <span class="text-xs font-medium text-zinc-200">{{ cronDescription || '解析中...' }}</span>
+          <span class="text-emerald-500 dark:text-emerald-400 text-sm">💡</span>
+          <span class="text-xs font-medium text-zinc-800 dark:text-zinc-200">{{ cronDescription || '解析中...' }}</span>
         </div>
-        <span v-if="isValid" class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono">语法合法</span>
-        <span v-else class="text-[10px] px-2 py-0.5 rounded bg-red-500/10 text-red-400 font-mono">语法错误</span>
+        <span v-if="isValid" class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono">语法合法</span>
+        <span v-else class="text-[10px] px-2 py-0.5 rounded bg-red-500/10 text-red-500 dark:text-red-400 font-mono">语法错误</span>
       </div>
 
       <!-- Cron 语法段位参考 -->
       <div class="grid grid-cols-5 gap-2 pt-1 text-center font-mono text-[11px]">
-        <div class="p-2 rounded bg-[#202026] border border-[#2a2a34]">
-          <div class="text-emerald-400 font-bold">第 1 位</div>
-          <div class="text-zinc-400 mt-0.5">分钟 (0 - 59)</div>
+        <div class="p-2 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+          <div class="text-emerald-600 dark:text-emerald-400 font-bold">第 1 位</div>
+          <div class="text-zinc-500 dark:text-zinc-400 mt-0.5">分钟 (0 - 59)</div>
         </div>
-        <div class="p-2 rounded bg-[#202026] border border-[#2a2a34]">
-          <div class="text-emerald-400 font-bold">第 2 位</div>
-          <div class="text-zinc-400 mt-0.5">小时 (0 - 23)</div>
+        <div class="p-2 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+          <div class="text-emerald-600 dark:text-emerald-400 font-bold">第 2 位</div>
+          <div class="text-zinc-500 dark:text-zinc-400 mt-0.5">小时 (0 - 23)</div>
         </div>
-        <div class="p-2 rounded bg-[#202026] border border-[#2a2a34]">
-          <div class="text-emerald-400 font-bold">第 3 位</div>
-          <div class="text-zinc-400 mt-0.5">日期 (1 - 31)</div>
+        <div class="p-2 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+          <div class="text-emerald-600 dark:text-emerald-400 font-bold">第 3 位</div>
+          <div class="text-zinc-500 dark:text-zinc-400 mt-0.5">日期 (1 - 31)</div>
         </div>
-        <div class="p-2 rounded bg-[#202026] border border-[#2a2a34]">
-          <div class="text-emerald-400 font-bold">第 4 位</div>
-          <div class="text-zinc-400 mt-0.5">月份 (1 - 12)</div>
+        <div class="p-2 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+          <div class="text-emerald-600 dark:text-emerald-400 font-bold">第 4 位</div>
+          <div class="text-zinc-500 dark:text-zinc-400 mt-0.5">月份 (1 - 12)</div>
         </div>
-        <div class="p-2 rounded bg-[#202026] border border-[#2a2a34]">
-          <div class="text-emerald-400 font-bold">第 5 位</div>
-          <div class="text-zinc-400 mt-0.5">星期 (0 - 7)</div>
+        <div class="p-2 rounded bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] transition-colors">
+          <div class="text-emerald-600 dark:text-emerald-400 font-bold">第 5 位</div>
+          <div class="text-zinc-500 dark:text-zinc-400 mt-0.5">星期 (0 - 7)</div>
         </div>
       </div>
     </div>
 
     <!-- 未来执行时间模拟预估 -->
-    <div class="p-4 rounded-xl bg-[#18181c] border border-[#27272a] space-y-3">
-      <div class="flex items-center justify-between border-b border-[#27272a] pb-2">
-        <span class="text-xs font-semibold text-zinc-200">未来 10 次调度执行时间预测</span>
-        <span class="text-[11px] text-zinc-400">基于当前系统时间</span>
+    <div class="p-4 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] space-y-3 transition-colors">
+      <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
+        <span class="text-xs font-semibold text-zinc-800 dark:text-zinc-200">未来 10 次调度执行时间预测</span>
+        <span class="text-[11px] text-zinc-500 dark:text-zinc-400">基于当前系统时间</span>
       </div>
 
       <div v-if="nextRuns.length > 0" class="space-y-1.5 font-mono text-xs">
         <div
           v-for="(time, idx) in nextRuns"
           :key="idx"
-          class="flex items-center justify-between px-3 py-2 rounded-lg bg-[#202026] border border-[#2a2a34] hover:border-emerald-500/40 transition-colors"
+          class="flex items-center justify-between px-3 py-2 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] hover:border-emerald-500/40 transition-colors"
         >
           <div class="flex items-center space-x-3">
-            <span class="text-emerald-400 font-bold w-6">#{{ idx + 1 }}</span>
-            <span class="text-zinc-100 select-all">{{ time.format }}</span>
+            <span class="text-emerald-600 dark:text-emerald-400 font-bold w-6">#{{ idx + 1 }}</span>
+            <span class="text-zinc-800 dark:text-zinc-100 select-all">{{ time.format }}</span>
           </div>
-          <span class="text-zinc-400 text-[11px]">{{ time.relative }}</span>
+          <span class="text-zinc-500 dark:text-zinc-400 text-[11px]">{{ time.relative }}</span>
         </div>
       </div>
 
-      <div v-else class="py-8 text-center text-zinc-500 text-xs">
+      <div v-else class="py-8 text-center text-zinc-400 dark:text-zinc-500 text-xs">
         {{ isValid ? '未计算出未来执行时间' : '表达式有误，请检查语法' }}
       </div>
     </div>

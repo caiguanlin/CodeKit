@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col space-y-3">
     <!-- 顶部标签切换 -->
-    <div class="px-3 py-2 rounded-lg bg-[#18181c] border border-[#27272a]">
+    <div class="px-3 py-2 rounded-lg bg-[var(--card-bg)] border border-[var(--border-color)] transition-colors">
       <n-tabs v-model:value="activeTab" type="segment" size="small">
         <n-tab name="uuid">UUID / GUID</n-tab>
         <n-tab name="password">强密码 / 密钥</n-tab>
@@ -10,14 +10,14 @@
     </div>
 
     <!-- 主工作区 -->
-    <div class="flex-1 flex flex-col min-h-0 bg-[#18181c] border border-[#27272a] rounded-xl p-4 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-h-0 bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl p-4 overflow-y-auto transition-colors">
       <!-- 模块 1: UUID 生成器 -->
       <div v-if="activeTab === 'uuid'" class="space-y-4">
         <!-- 控制面板 -->
-        <div class="p-3 rounded-lg bg-[#202026] border border-[#2a2a34] flex items-center justify-between flex-wrap gap-3">
+        <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] flex items-center justify-between flex-wrap gap-3 transition-colors">
           <div class="flex items-center space-x-4 flex-wrap">
             <div class="flex items-center space-x-2">
-              <span class="text-xs text-zinc-400">版本:</span>
+              <span class="text-xs text-zinc-500 dark:text-zinc-400">版本:</span>
               <n-radio-group v-model:value="uuidVersion" size="small">
                 <n-radio-button value="v4">UUID v4 (随机)</n-radio-button>
                 <n-radio-button value="v7">UUID v7 (时间序)</n-radio-button>
@@ -25,17 +25,17 @@
             </div>
 
             <div class="flex items-center space-x-2">
-              <span class="text-xs text-zinc-400">大写:</span>
+              <span class="text-xs text-zinc-500 dark:text-zinc-400">大写:</span>
               <n-switch v-model:value="uuidUppercase" size="small" />
             </div>
 
             <div class="flex items-center space-x-2">
-              <span class="text-xs text-zinc-400">连字符 (-):</span>
+              <span class="text-xs text-zinc-500 dark:text-zinc-400">连字符 (-):</span>
               <n-switch v-model:value="uuidHyphens" size="small" />
             </div>
 
             <div class="flex items-center space-x-2">
-              <span class="text-xs text-zinc-400">生成数量:</span>
+              <span class="text-xs text-zinc-500 dark:text-zinc-400">生成数量:</span>
               <n-input-number v-model:value="uuidCount" size="small" :min="1" :max="50" class="w-24" />
             </div>
           </div>
@@ -55,9 +55,9 @@
           <div
             v-for="(item, idx) in uuidList"
             :key="idx"
-            class="flex items-center justify-between px-3 py-2 rounded-lg bg-[#202026] border border-[#2a2a34] font-mono text-xs hover:border-emerald-500/40 transition-colors"
+            class="flex items-center justify-between px-3 py-2 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] font-mono text-xs hover:border-emerald-500/40 transition-colors"
           >
-            <span class="text-zinc-200 select-all">{{ item }}</span>
+            <span class="text-zinc-800 dark:text-zinc-200 select-all">{{ item }}</span>
             <n-button size="tiny" secondary @click="copy(item)">复制</n-button>
           </div>
         </div>
@@ -66,20 +66,20 @@
       <!-- 模块 2: 强密码 / 密钥 -->
       <div v-else-if="activeTab === 'password'" class="space-y-4">
         <!-- 控制面板 -->
-        <div class="p-4 rounded-lg bg-[#202026] border border-[#2a2a34] space-y-4">
+        <div class="p-4 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-4 transition-colors">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
               <div class="flex items-center justify-between text-xs">
-                <span class="text-zinc-400">密码长度:</span>
-                <span class="font-bold text-emerald-400 font-mono">{{ passLength }} 位</span>
+                <span class="text-zinc-500 dark:text-zinc-400">密码长度:</span>
+                <span class="font-bold text-emerald-600 dark:text-emerald-400 font-mono">{{ passLength }} 位</span>
               </div>
               <n-slider v-model:value="passLength" :min="6" :max="64" :step="1" />
             </div>
 
             <div class="space-y-2">
               <div class="flex items-center justify-between text-xs">
-                <span class="text-zinc-400">生成组数:</span>
-                <span class="font-bold text-blue-400 font-mono">{{ passCount }} 个</span>
+                <span class="text-zinc-500 dark:text-zinc-400">生成组数:</span>
+                <span class="font-bold text-blue-600 dark:text-blue-400 font-mono">{{ passCount }} 个</span>
               </div>
               <n-slider v-model:value="passCount" :min="1" :max="20" :step="1" />
             </div>
@@ -93,9 +93,9 @@
             <n-checkbox v-model:checked="passExcludeSimilar">排除易混淆字符 (0/O, 1/l/I)</n-checkbox>
           </div>
 
-          <div class="flex items-center justify-between pt-2 border-t border-[#2a2a34]">
+          <div class="flex items-center justify-between pt-2 border-t border-[var(--border-sub-color)]">
             <div class="flex items-center space-x-2 text-xs">
-              <span class="text-zinc-400">安全强度预估:</span>
+              <span class="text-zinc-500 dark:text-zinc-400">安全强度预估:</span>
               <span class="font-bold" :class="passwordStrengthColor">{{ passwordStrengthLabel }}</span>
             </div>
             <div class="flex items-center space-x-2">
@@ -114,9 +114,9 @@
           <div
             v-for="(item, idx) in passwordList"
             :key="idx"
-            class="flex items-center justify-between px-3 py-2 rounded-lg bg-[#202026] border border-[#2a2a34] font-mono text-xs hover:border-blue-500/40 transition-colors"
+            class="flex items-center justify-between px-3 py-2 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] font-mono text-xs hover:border-blue-500/40 transition-colors"
           >
-            <span class="text-zinc-200 select-all">{{ item }}</span>
+            <span class="text-zinc-800 dark:text-zinc-200 select-all">{{ item }}</span>
             <n-button size="tiny" secondary @click="copy(item)">复制</n-button>
           </div>
         </div>
@@ -124,26 +124,26 @@
 
       <!-- 模块 3: NanoID 生成器 -->
       <div v-else-if="activeTab === 'nanoid'" class="space-y-4">
-        <div class="p-4 rounded-lg bg-[#202026] border border-[#2a2a34] space-y-4">
+        <div class="p-4 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-4 transition-colors">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
               <div class="flex items-center justify-between text-xs">
-                <span class="text-zinc-400">NanoID 长度:</span>
-                <span class="font-bold text-amber-400 font-mono">{{ nanoidLength }} 位</span>
+                <span class="text-zinc-500 dark:text-zinc-400">NanoID 长度:</span>
+                <span class="font-bold text-amber-600 dark:text-amber-400 font-mono">{{ nanoidLength }} 位</span>
               </div>
               <n-slider v-model:value="nanoidLength" :min="6" :max="48" :step="1" />
             </div>
 
             <div class="space-y-2">
               <div class="flex items-center justify-between text-xs">
-                <span class="text-zinc-400">生成数量:</span>
-                <span class="font-bold text-emerald-400 font-mono">{{ nanoidCount }} 个</span>
+                <span class="text-zinc-500 dark:text-zinc-400">生成数量:</span>
+                <span class="font-bold text-emerald-600 dark:text-emerald-400 font-mono">{{ nanoidCount }} 个</span>
               </div>
               <n-slider v-model:value="nanoidCount" :min="1" :max="30" :step="1" />
             </div>
           </div>
 
-          <div class="flex items-center justify-between pt-2 border-t border-[#2a2a34]">
+          <div class="flex items-center justify-between pt-2 border-t border-[var(--border-sub-color)]">
             <span class="text-xs text-zinc-500">超轻量、无序、高碰撞抗性唯一标识符</span>
             <div class="flex items-center space-x-2">
               <n-button size="small" type="primary" secondary @click="generateNanoIds">
@@ -160,9 +160,9 @@
           <div
             v-for="(item, idx) in nanoidList"
             :key="idx"
-            class="flex items-center justify-between px-3 py-2 rounded-lg bg-[#202026] border border-[#2a2a34] font-mono text-xs hover:border-amber-500/40 transition-colors"
+            class="flex items-center justify-between px-3 py-2 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] font-mono text-xs hover:border-amber-500/40 transition-colors"
           >
-            <span class="text-zinc-200 select-all">{{ item }}</span>
+            <span class="text-zinc-800 dark:text-zinc-200 select-all">{{ item }}</span>
             <n-button size="tiny" secondary @click="copy(item)">复制</n-button>
           </div>
         </div>

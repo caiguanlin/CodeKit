@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col space-y-3">
     <!-- 顶部操作工具栏 -->
-    <div class="flex items-center justify-between flex-wrap gap-2 px-3 py-2 rounded-lg bg-[#18181c] border border-[#27272a]">
+    <div class="flex items-center justify-between flex-wrap gap-2 px-3 py-2 rounded-lg bg-[var(--card-bg)] border border-[var(--border-color)] transition-colors">
       <div class="flex items-center space-x-2 flex-wrap">
         <n-button size="small" type="primary" secondary @click="formatJson(2)">
           格式化 (2空格)
@@ -53,9 +53,9 @@
       </div>
 
       <!-- 右侧：代码转换输出面板 (当转换为 TS / Go 时展开) -->
-      <div v-if="convertedCode" class="w-1/2 flex flex-col min-w-0 h-full bg-[#18181c] border border-[#27272a] rounded-lg overflow-hidden">
-        <div class="h-9 px-3 flex items-center justify-between border-b border-[#27272a] bg-[#1e1e24]">
-          <span class="text-xs font-semibold text-emerald-400">{{ convertedType === 'ts' ? 'TypeScript 定义' : 'Go Struct 定义' }}</span>
+      <div v-if="convertedCode" class="w-1/2 flex flex-col min-w-0 h-full bg-[var(--card-bg)] border border-[var(--border-color)] rounded-lg overflow-hidden transition-colors">
+        <div class="h-9 px-3 flex items-center justify-between border-b border-[var(--border-color)] bg-[var(--card-sub-bg)]">
+          <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">{{ convertedType === 'ts' ? 'TypeScript 定义' : 'Go Struct 定义' }}</span>
           <div class="flex items-center space-x-1">
             <n-button size="tiny" secondary @click="copyConverted">复制定义</n-button>
             <n-button size="tiny" quaternary @click="convertedCode = ''">关闭</n-button>
@@ -73,26 +73,26 @@
     </div>
 
     <!-- 底部状态指示栏 -->
-    <div class="h-8 px-3 flex items-center justify-between rounded bg-[#18181c] border border-[#27272a] text-xs">
+    <div class="h-8 px-3 flex items-center justify-between rounded bg-[var(--card-bg)] border border-[var(--border-color)] text-xs transition-colors">
       <div class="flex items-center space-x-2">
         <span
           v-if="validationStatus === 'valid'"
-          class="flex items-center text-emerald-400 font-medium"
+          class="flex items-center text-emerald-600 dark:text-emerald-400 font-medium"
         >
-          <span class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
+          <span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
           JSON 格式有效
         </span>
         <span
           v-else-if="validationStatus === 'invalid'"
-          class="flex items-center text-red-400 font-medium"
+          class="flex items-center text-red-500 dark:text-red-400 font-medium"
         >
-          <span class="w-2 h-2 rounded-full bg-red-400 mr-1.5"></span>
+          <span class="w-2 h-2 rounded-full bg-red-500 mr-1.5"></span>
           {{ errorMessage }}
         </span>
-        <span v-else class="text-zinc-500">就绪</span>
+        <span v-else class="text-zinc-400 dark:text-zinc-500">就绪</span>
       </div>
 
-      <div class="flex items-center space-x-4 text-zinc-500 font-mono text-[11px]">
+      <div class="flex items-center space-x-4 text-zinc-500 dark:text-zinc-400 font-mono text-[11px]">
         <span>字符数: {{ jsonInput.length }}</span>
         <span>行数: {{ lineCount }}</span>
         <span>大小: {{ jsonByteSize }} KB</span>
