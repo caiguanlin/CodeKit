@@ -49,20 +49,8 @@
         </button>
       </div>
 
-      <!-- 侧边栏底部：本地隐私安全标识与设置菜单项（固定在最底部） -->
-      <div class="p-2 border-t border-[var(--border-color)] space-y-1 shrink-0 mt-auto bg-[var(--sidebar-bg)]">
-        <!-- 本地隐私安全标识 -->
-        <div
-          class="px-2.5 py-1 text-[11px] text-zinc-400 dark:text-zinc-500 flex items-center space-x-2"
-          :class="settingsStore.isSidebarCollapsed ? 'justify-center px-0' : ''"
-          :title="settingsStore.isSidebarCollapsed ? '本地优先 · 隐私安全' : ''"
-        >
-          <svg class="w-3.5 h-3.5 text-emerald-500/80 dark:text-emerald-400/80 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-          <span v-if="!settingsStore.isSidebarCollapsed" class="truncate">本地优先 · 隐私安全</span>
-        </div>
+      <!-- 侧边栏底部：设置菜单项（固定在最底部） -->
+      <div class="p-2 border-t border-[var(--border-color)] shrink-0 mt-auto bg-[var(--sidebar-bg)]">
 
         <!-- 设置菜单项 (移动至最底部) -->
         <button
