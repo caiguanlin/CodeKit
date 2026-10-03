@@ -2,6 +2,8 @@
   <n-config-provider
     :theme="settingsStore.theme === 'dark' ? darkTheme : null"
     :theme-overrides="currentThemeOverrides"
+    class="h-full w-full block"
+    style="height: 100%; width: 100%;"
   >
     <n-message-provider>
       <n-dialog-provider>
@@ -10,9 +12,9 @@
           <TitleBar />
 
           <!-- 主界面布局与工作区 -->
-          <MainLayout />
+          <MainLayout class="flex-1 min-h-0" />
 
-          <!-- 全局指令搜索面板 (Ctrl+K) -->
+          <!-- 全局指令搜索面板 (Ctrl+F) -->
           <CommandPalette />
         </div>
       </n-dialog-provider>
@@ -103,8 +105,8 @@ const currentThemeOverrides = computed<GlobalThemeOverrides>(() => {
 })
 
 function handleGlobalKeydown(e: KeyboardEvent): void {
-  // Ctrl+K 或 Cmd+K 呼出指令面板
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+  // Ctrl+F 或 Cmd+F (兼容 Ctrl+K / Cmd+K) 呼出指令面板
+  if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'f' || e.key.toLowerCase() === 'k')) {
     e.preventDefault()
     settingsStore.toggleCommandPalette()
   }

@@ -54,6 +54,12 @@ body,
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* 确保 Naive UI Provider 容器与根组件撑满 100% 视窗高度 */
+.n-config-provider {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 /* 按钮通用重置，避免 Chromium 默认 buttonface 背景 */
 button {
   background: transparent;

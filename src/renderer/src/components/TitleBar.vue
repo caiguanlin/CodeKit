@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <!-- 中间：全局搜索快速触发条 (Ctrl+K) -->
+    <!-- 中间：全局搜索快速触发条 (Ctrl+F) -->
     <div class="flex-1 max-w-sm mx-4 min-w-0 no-drag">
       <button
         type="button"
@@ -30,7 +30,7 @@
           </svg>
           <span class="text-[11px] truncate">搜索工具或功能...</span>
         </span>
-        <kbd class="px-1.5 py-0.5 text-[10px] font-mono rounded bg-white dark:bg-[#18181c] text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-[#3a3a42] shrink-0 ml-1.5">Ctrl K</kbd>
+        <kbd class="px-1.5 py-0.5 text-[10px] font-mono rounded bg-white dark:bg-[#18181c] text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-[#3a3a42] shrink-0 ml-1.5">Ctrl F</kbd>
       </button>
     </div>
 

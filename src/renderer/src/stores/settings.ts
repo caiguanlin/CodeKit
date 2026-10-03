@@ -4,6 +4,7 @@ import { ref } from 'vue'
 export const useSettingsStore = defineStore('settings', () => {
   const theme = ref<'dark' | 'light'>('dark')
   const isSidebarCollapsed = ref(false)
+  const isSidebarManuallyToggled = ref(false)
   const isCommandPaletteOpen = ref(false)
 
   function applyThemeClass(t: 'dark' | 'light'): void {
@@ -46,10 +47,21 @@ export const useSettingsStore = defineStore('settings', () => {
   }
 
   function toggleSidebar(): void {
+    isSidebarManuallyToggled.value = true
     isSidebarCollapsed.value = !isSidebarCollapsed.value
     if (window.electronAPI) {
       window.electronAPI.setStore('isSidebarCollapsed', isSidebarCollapsed.value)
     }
+  }
+
+  function setSidebarCollapsed(val: boolean, isManual = false): void {
+    if (isManual) {
+      isSidebarManuallyToggled.value = true
+      if (window.electronAPI) {
+        window.electronAPI.setStore('isSidebarCollapsed', val)
+      }
+    }
+    isSidebarCollapsed.value = val
   }
 
   function openCommandPalette(): void {
@@ -67,11 +79,13 @@ export const useSettingsStore = defineStore('settings', () => {
   return {
     theme,
     isSidebarCollapsed,
+    isSidebarManuallyToggled,
     isCommandPaletteOpen,
     init,
     setTheme,
     toggleTheme,
     toggleSidebar,
+    setSidebarCollapsed,
     openCommandPalette,
     closeCommandPalette,
     toggleCommandPalette

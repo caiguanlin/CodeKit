@@ -112,41 +112,7 @@
 
     <!-- 主工作区 -->
     <main class="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden bg-[var(--app-bg)]">
-      <!-- 顶部当前工具标头 -->
-      <header v-if="currentTool" class="h-12 px-6 flex items-center justify-between border-b border-[var(--border-color)] bg-[var(--header-bg)] shrink-0 transition-colors duration-200">
-        <div class="flex items-center space-x-3">
-          <div
-            class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs"
-            :style="{ backgroundColor: `${currentTool.accentColor}20`, color: currentTool.accentColor }"
-          >
-            {{ currentTool.shortName.slice(0, 2) }}
-          </div>
-          <div>
-            <h1 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-              <span>{{ currentTool.name }}</span>
-            </h1>
-            <p class="text-[11px] text-zinc-500 dark:text-zinc-400">{{ currentTool.description }}</p>
-          </div>
-        </div>
-      </header>
 
-      <!-- 设置页面顶部标头 -->
-      <header v-else-if="isSettingsActive" class="h-12 px-6 flex items-center justify-between border-b border-[var(--border-color)] bg-[var(--header-bg)] shrink-0 transition-colors duration-200">
-        <div class="flex items-center space-x-3">
-          <div class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
-          </div>
-          <div>
-            <h1 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-              <span>偏好设置</span>
-            </h1>
-            <p class="text-[11px] text-zinc-500 dark:text-zinc-400">外观主题切换、常规配置与应用说明</p>
-          </div>
-        </div>
-      </header>
 
       <!-- 动态视图容器 (支持视图状态缓存与平滑滚动) -->
       <section class="flex-1 min-h-0 overflow-y-auto p-4">
@@ -183,13 +149,6 @@ const recentToolsList = computed(() => {
 
 const isSettingsActive = computed(() => route.path === '/settings')
 
-const currentTool = computed(() => {
-  const currentPath = route.path
-  if (currentPath === '/settings') {
-    return null
-  }
-  return TOOLS.find((t) => t.route === currentPath) || getToolById(toolStore.activeToolId)
-})
 
 // 监听路由变化，自动记录当前打开的工具
 watch(
