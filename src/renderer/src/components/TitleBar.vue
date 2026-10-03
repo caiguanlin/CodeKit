@@ -34,59 +34,21 @@
       </button>
     </div>
 
-    <!-- 右侧：置顶、主题切换与窗口操作控制按钮 -->
+    <!-- 右侧：主题切换与窗口操作控制按钮 -->
     <div class="flex items-center space-x-1 no-drag shrink-0">
-      <!-- 窗口置顶按钮 -->
+      <!-- 设置快捷入口按钮 -->
       <button
         type="button"
-        @click="settingsStore.toggleAlwaysOnTop()"
-        :title="settingsStore.isAlwaysOnTop ? '取消窗口置顶' : '窗口置顶'"
+        @click="openSettings"
+        :title="route.path === '/settings' ? '当前处于设置' : '打开设置'"
         class="w-7 h-7 flex items-center justify-center rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0"
-        :class="settingsStore.isAlwaysOnTop ? 'text-emerald-500 dark:text-emerald-400' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'"
+        :class="route.path === '/settings' ? 'text-emerald-500 dark:text-emerald-400 bg-emerald-500/10' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'"
       >
         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2v8"></path>
-          <path d="m5 10 7-8 7 8"></path>
-          <path d="M4 14h16"></path>
-          <path d="M12 14v8"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
       </button>
-
-      <!-- 样式主题切换组件 (分别为浅色、深色切换) -->
-      <div class="flex items-center p-0.5 rounded-lg bg-zinc-200/80 dark:bg-[#25252c] border border-zinc-300/70 dark:border-[#353540] text-xs">
-        <button
-          type="button"
-          @click="settingsStore.setTheme('light')"
-          :class="settingsStore.theme === 'light' ? 'bg-white text-emerald-600 font-semibold shadow-xs' : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'"
-          class="flex items-center space-x-1 px-2 py-0.5 rounded-md transition-all cursor-pointer"
-          title="切换为浅色主题"
-        >
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="4"></circle>
-            <path d="M12 2v2"></path>
-            <path d="M12 20v2"></path>
-            <path d="m4.93 4.93 1.41 1.41"></path>
-            <path d="m17.66 17.66 1.41 1.41"></path>
-            <path d="M2 12h2"></path>
-            <path d="M20 12h2"></path>
-            <path d="m6.34 17.66-1.41 1.41"></path>
-            <path d="m19.07 4.93-1.41 1.41"></path>
-          </svg>
-          <span class="text-[11px]">浅色</span>
-        </button>
-        <button
-          type="button"
-          @click="settingsStore.setTheme('dark')"
-          :class="settingsStore.theme === 'dark' ? 'bg-[#353540] text-emerald-400 font-semibold shadow-xs' : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'"
-          class="flex items-center space-x-1 px-2 py-0.5 rounded-md transition-all cursor-pointer"
-          title="切换为深色主题"
-        >
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-          </svg>
-          <span class="text-[11px]">深色</span>
-        </button>
-      </div>
 
       <!-- 分隔线 -->
       <div class="w-px h-3.5 bg-zinc-300/80 dark:bg-zinc-700 mx-1 shrink-0"></div>
@@ -137,11 +99,20 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useSettingsStore } from '@/stores/settings'
 
+const router = useRouter()
+const route = useRoute()
 const settingsStore = useSettingsStore()
 const isMax = ref(false)
 let unsubscribeMax: (() => void) | undefined
+
+function openSettings(): void {
+  if (route.path !== '/settings') {
+    router.push('/settings')
+  }
+}
 
 async function checkMaximized(): Promise<void> {
   if (window.electronAPI) {

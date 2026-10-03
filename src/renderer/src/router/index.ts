@@ -12,6 +12,11 @@ const routes = [
     component: tool.component
   })),
   {
+    path: '/settings',
+    name: 'settings',
+    component: () => import('@/views/Settings.vue')
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/tools/json'
   }

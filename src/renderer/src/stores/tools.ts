@@ -1,39 +1,27 @@
-import { defineStore } from 'pinia'
+import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref } from 'vue'
 
 export const useToolStore = defineStore('tools', () => {
-  const favorites = ref<string[]>(['json', 'timestamp', 'codec'])
-  const recentTools = ref<string[]>([])
-  const activeToolId = ref<string>('json')
+  const recentTools = ref<string[]>(['codec', 'timestamp', 'json'])
+  const activeToolId = ref<string>('codec')
 
   async function init(): Promise<void> {
     if (window.electronAPI) {
-      const savedFavorites = await window.electronAPI.getStore('favorites', ['json', 'timestamp', 'codec'])
-      if (Array.isArray(savedFavorites)) favorites.value = savedFavorites
-
-      const savedRecents = await window.electronAPI.getStore('recentTools', ['json', 'timestamp'])
-      if (Array.isArray(savedRecents)) recentTools.value = savedRecents
+      const savedRecents = await window.electronAPI.getStore('recentTools', ['codec', 'timestamp', 'json'])
+      if (Array.isArray(savedRecents) && savedRecents.length > 0) {
+        recentTools.value = savedRecents.slice(0, 3)
+      }
     }
-  }
-
-  function toggleFavorite(id: string): void {
-    const idx = favorites.value.indexOf(id)
-    if (idx >= 0) {
-      favorites.value.splice(idx, 1)
-    } else {
-      favorites.value.push(id)
-    }
-    if (window.electronAPI) {
-      window.electronAPI.setStore('favorites', [...favorites.value])
-    }
-  }
-
-  function isFavorite(id: string): boolean {
-    return favorites.value.includes(id)
   }
 
   function addRecent(id: string): void {
-    recentTools.value = [id, ...recentTools.value.filter((item) => item !== id)].slice(0, 8)
+    if (!id) return
+    // 若该工具已在当前常用工具（前3个）中，则保持原有位置与排序不变，绝不重复置顶
+    if (recentTools.value.slice(0, 3).includes(id)) {
+      return
+    }
+    // 只有当访问了不在前三中的新工具时，才将其加入最前并保留最近3个
+    recentTools.value = [id, ...recentTools.value.filter((item) => item !== id)].slice(0, 3)
     if (window.electronAPI) {
       window.electronAPI.setStore('recentTools', [...recentTools.value])
     }
@@ -45,13 +33,14 @@ export const useToolStore = defineStore('tools', () => {
   }
 
   return {
-    favorites,
     recentTools,
     activeToolId,
     init,
-    toggleFavorite,
-    isFavorite,
     addRecent,
     setActiveTool
   }
 })
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useToolStore, import.meta.hot))
+}

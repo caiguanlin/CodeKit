@@ -65,14 +65,8 @@
               </div>
             </div>
 
-            <!-- 右侧标记与回车提示 -->
+            <!-- 右侧回车提示 -->
             <div class="flex items-center space-x-2 pl-2">
-              <span
-                v-if="toolStore.isFavorite(tool.id)"
-                class="px-1.5 py-0.5 text-[10px] rounded bg-amber-500/15 text-amber-600 dark:text-amber-300"
-              >
-                ★ 收藏
-              </span>
               <span
                 v-if="selectedIndex === index"
                 class="flex items-center text-[10px] text-emerald-600 dark:text-emerald-400 font-mono"
@@ -104,7 +98,7 @@
           <span><kbd class="px-1 py-0.2 rounded bg-white dark:bg-[#272730] border border-zinc-200 dark:border-[#3a3a46]">↑</kbd> <kbd class="px-1 py-0.2 rounded bg-white dark:bg-[#272730] border border-zinc-200 dark:border-[#3a3a46]">↓</kbd> 切换</span>
           <span><kbd class="px-1 py-0.2 rounded bg-white dark:bg-[#272730] border border-zinc-200 dark:border-[#3a3a46]">Enter</kbd> 打开</span>
         </div>
-        <span>共 {{ TOOLS.length }} 款实用工具</span>
+        <span>共 {{ TOOLS.length }} 款实用工具 · 偏好设置</span>
       </div>
     </div>
   </div>
@@ -140,10 +134,27 @@ watch(
   }
 )
 
+const SETTINGS_COMMAND: ToolMetadata = {
+  id: 'settings',
+  name: '偏好设置',
+  shortName: '设置',
+  description: '外观主题切换（浅色/深色）、常规窗口行为与应用配置',
+  category: 'format',
+  icon: 'SettingsOutline',
+  accentColor: '#10b981',
+  keywords: ['settings', 'shezhi', 'theme', 'dark', 'light', 'zhuti', 'qianse', 'shense', 'waiguan', 'peizhi'],
+  route: '/settings',
+  component: () => import('@/views/Settings.vue')
+}
+
+const ALL_SEARCH_ITEMS = computed<ToolMetadata[]>(() => {
+  return [...TOOLS, SETTINGS_COMMAND]
+})
+
 const filteredTools = computed(() => {
   const q = query.value.trim().toLowerCase()
-  if (!q) return TOOLS
-  return TOOLS.filter((tool) => {
+  if (!q) return ALL_SEARCH_ITEMS.value
+  return ALL_SEARCH_ITEMS.value.filter((tool) => {
     return (
       tool.name.toLowerCase().includes(q) ||
       tool.shortName.toLowerCase().includes(q) ||
@@ -164,8 +175,12 @@ function navigate(direction: number): void {
 }
 
 function selectTool(tool: ToolMetadata): void {
-  toolStore.setActiveTool(tool.id)
-  router.push(tool.route)
+  if (tool.id === 'settings') {
+    router.push('/settings')
+  } else {
+    toolStore.setActiveTool(tool.id)
+    router.push(tool.route)
+  }
   close()
 }
 
