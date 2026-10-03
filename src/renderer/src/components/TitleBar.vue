@@ -52,28 +52,41 @@
         </svg>
       </button>
 
-      <!-- 主题切换 -->
-      <button
-        type="button"
-        @click="settingsStore.toggleTheme()"
-        :title="settingsStore.theme === 'dark' ? '切换为浅色主题' : '切换为深色主题'"
-        class="w-7 h-7 flex items-center justify-center rounded hover:bg-black/5 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors cursor-pointer shrink-0"
-      >
-        <svg v-if="settingsStore.theme === 'dark'" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="4"></circle>
-          <path d="M12 2v2"></path>
-          <path d="M12 20v2"></path>
-          <path d="m4.93 4.93 1.41 1.41"></path>
-          <path d="m17.66 17.66 1.41 1.41"></path>
-          <path d="M2 12h2"></path>
-          <path d="M20 12h2"></path>
-          <path d="m6.34 17.66-1.41 1.41"></path>
-          <path d="m19.07 4.93-1.41 1.41"></path>
-        </svg>
-        <svg v-else class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-        </svg>
-      </button>
+      <!-- 样式主题切换组件 (分别为浅色、深色切换) -->
+      <div class="flex items-center p-0.5 rounded-lg bg-zinc-200/80 dark:bg-[#25252c] border border-zinc-300/70 dark:border-[#353540] text-xs">
+        <button
+          type="button"
+          @click="settingsStore.setTheme('light')"
+          :class="settingsStore.theme === 'light' ? 'bg-white text-emerald-600 font-semibold shadow-xs' : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'"
+          class="flex items-center space-x-1 px-2 py-0.5 rounded-md transition-all cursor-pointer"
+          title="切换为浅色主题"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+            <path d="m4.93 4.93 1.41 1.41"></path>
+            <path d="m17.66 17.66 1.41 1.41"></path>
+            <path d="M2 12h2"></path>
+            <path d="M20 12h2"></path>
+            <path d="m6.34 17.66-1.41 1.41"></path>
+            <path d="m19.07 4.93-1.41 1.41"></path>
+          </svg>
+          <span class="text-[11px]">浅色</span>
+        </button>
+        <button
+          type="button"
+          @click="settingsStore.setTheme('dark')"
+          :class="settingsStore.theme === 'dark' ? 'bg-[#353540] text-emerald-400 font-semibold shadow-xs' : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'"
+          class="flex items-center space-x-1 px-2 py-0.5 rounded-md transition-all cursor-pointer"
+          title="切换为深色主题"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+          <span class="text-[11px]">深色</span>
+        </button>
+      </div>
 
       <!-- 分隔线 -->
       <div class="w-px h-3.5 bg-zinc-300/80 dark:bg-zinc-700 mx-1 shrink-0"></div>

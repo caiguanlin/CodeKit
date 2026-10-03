@@ -1,6 +1,7 @@
 import { BrowserWindow, shell } from 'electron'
 import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
+import { store } from './store'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -9,6 +10,9 @@ export function getMainWindow(): BrowserWindow | null {
 }
 
 export function createMainWindow(): BrowserWindow {
+  const savedTheme = store.get<'dark' | 'light'>('theme', 'dark')
+  const initialBg = savedTheme === 'light' ? '#f4f4f5' : '#121214'
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -17,7 +21,7 @@ export function createMainWindow(): BrowserWindow {
     show: false,
     frame: false,
     ...(process.platform === 'darwin' ? { titleBarStyle: 'hidden' } : {}),
-    backgroundColor: '#121214',
+    backgroundColor: initialBg,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,

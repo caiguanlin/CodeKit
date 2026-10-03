@@ -5,12 +5,12 @@
     @click.self="close"
   >
     <div
-      class="w-full max-w-xl overflow-hidden rounded-xl bg-[#1e1e24] border border-[#33333b] shadow-2xl animate-fade-in text-zinc-200"
+      class="w-full max-w-xl overflow-hidden rounded-xl bg-white dark:bg-[#1e1e24] border border-zinc-200 dark:border-[#33333b] shadow-2xl animate-fade-in text-zinc-800 dark:text-zinc-200"
       @keydown.esc="close"
     >
       <!-- 搜索输入框 -->
-      <div class="flex items-center px-4 py-3 border-b border-[#2d2d35] bg-[#1a1a20]">
-        <svg class="w-5 h-5 text-emerald-400 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="flex items-center px-4 py-3 border-b border-zinc-200 dark:border-[#2d2d35] bg-zinc-50 dark:bg-[#1a1a20]">
+        <svg class="w-5 h-5 text-emerald-500 dark:text-emerald-400 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"></circle>
           <path d="m21 21-4.35-4.35"></path>
         </svg>
@@ -19,7 +19,7 @@
           v-model="query"
           type="text"
           placeholder="搜索工具或功能，例如：JSON、时间戳、Base64、正则、UUID..."
-          class="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none"
+          class="flex-1 bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none"
           @keydown.down.prevent="navigate(1)"
           @keydown.up.prevent="navigate(-1)"
           @keydown.enter.prevent="selectCurrent"
@@ -28,14 +28,14 @@
           v-if="query"
           type="button"
           @click="query = ''"
-          class="p-1 text-zinc-500 hover:text-zinc-300"
+          class="p-1 text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
         >
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 6 6 18"></path>
             <path d="m6 6 12 12"></path>
           </svg>
         </button>
-        <kbd class="ml-2 px-1.5 py-0.5 text-[10px] font-mono rounded bg-[#272730] text-zinc-400 border border-[#3a3a46]">Esc</kbd>
+        <kbd class="ml-2 px-1.5 py-0.5 text-[10px] font-mono rounded bg-white dark:bg-[#272730] text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-[#3a3a46]">Esc</kbd>
       </div>
 
       <!-- 搜索结果列表 -->
@@ -46,7 +46,7 @@
             :key="tool.id"
             :class="[
               'flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-colors text-xs',
-              selectedIndex === index ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'hover:bg-white/5 text-zinc-300'
+              selectedIndex === index ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30' : 'hover:bg-zinc-100 dark:hover:bg-white/5 text-zinc-700 dark:text-zinc-300'
             ]"
             @mouseenter="selectedIndex = index"
             @click="selectTool(tool)"
@@ -60,8 +60,8 @@
                 {{ tool.shortName.slice(0, 2) }}
               </div>
               <div class="flex flex-col truncate">
-                <span class="font-medium text-zinc-100">{{ tool.name }}</span>
-                <span class="text-[11px] text-zinc-400 truncate">{{ tool.description }}</span>
+                <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ tool.name }}</span>
+                <span class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">{{ tool.description }}</span>
               </div>
             </div>
 
@@ -69,13 +69,13 @@
             <div class="flex items-center space-x-2 pl-2">
               <span
                 v-if="toolStore.isFavorite(tool.id)"
-                class="px-1.5 py-0.5 text-[10px] rounded bg-amber-500/15 text-amber-300"
+                class="px-1.5 py-0.5 text-[10px] rounded bg-amber-500/15 text-amber-600 dark:text-amber-300"
               >
                 ★ 收藏
               </span>
               <span
                 v-if="selectedIndex === index"
-                class="flex items-center text-[10px] text-emerald-400 font-mono"
+                class="flex items-center text-[10px] text-emerald-600 dark:text-emerald-400 font-mono"
               >
                 <span>Enter</span>
                 <svg class="w-3 h-3 ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -89,20 +89,20 @@
 
         <!-- 空状态 -->
         <div v-else class="py-12 flex flex-col items-center justify-center text-center text-zinc-400">
-          <svg class="w-8 h-8 text-zinc-600 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="w-8 h-8 text-zinc-400 dark:text-zinc-600 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
             <path d="m21 21-4.35-4.35"></path>
           </svg>
-          <p class="text-sm font-medium text-zinc-300">没有找到相关工具</p>
-          <p class="text-xs text-zinc-500 mt-1">换一个更简短的关键词试试，如 “json” 或 “base64”</p>
+          <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300">没有找到相关工具</p>
+          <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1">换一个更简短的关键词试试，如 “json” 或 “base64”</p>
         </div>
       </div>
 
       <!-- 底部操作提示 -->
-      <div class="flex items-center justify-between px-4 py-2 border-t border-[#2d2d35] bg-[#1a1a20] text-[11px] text-zinc-500 font-mono">
+      <div class="flex items-center justify-between px-4 py-2 border-t border-zinc-200 dark:border-[#2d2d35] bg-zinc-50 dark:bg-[#1a1a20] text-[11px] text-zinc-500 font-mono">
         <div class="flex items-center space-x-3">
-          <span><kbd class="px-1 py-0.2 rounded bg-[#272730] border border-[#3a3a46]">↑</kbd> <kbd class="px-1 py-0.2 rounded bg-[#272730] border border-[#3a3a46]">↓</kbd> 切换</span>
-          <span><kbd class="px-1 py-0.2 rounded bg-[#272730] border border-[#3a3a46]">Enter</kbd> 打开</span>
+          <span><kbd class="px-1 py-0.2 rounded bg-white dark:bg-[#272730] border border-zinc-200 dark:border-[#3a3a46]">↑</kbd> <kbd class="px-1 py-0.2 rounded bg-white dark:bg-[#272730] border border-zinc-200 dark:border-[#3a3a46]">↓</kbd> 切换</span>
+          <span><kbd class="px-1 py-0.2 rounded bg-white dark:bg-[#272730] border border-zinc-200 dark:border-[#3a3a46]">Enter</kbd> 打开</span>
         </div>
         <span>共 {{ TOOLS.length }} 款实用工具</span>
       </div>

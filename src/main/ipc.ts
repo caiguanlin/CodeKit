@@ -51,8 +51,12 @@ export function registerIpcHandlers(): void {
     return store.get(key, defaultValue)
   })
 
-  ipcMain.handle('store:set', (_event, key: string, value: any) => {
+  ipcMain.handle('store:set', (event, key: string, value: any) => {
     store.set(key, value)
+    if (key === 'theme') {
+      const win = BrowserWindow.fromWebContents(event.sender)
+      win?.setBackgroundColor(value === 'light' ? '#f4f4f5' : '#121214')
+    }
     return true
   })
 

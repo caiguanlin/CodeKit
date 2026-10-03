@@ -158,7 +158,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-1">
-            <div class="text-xs text-zinc-400 font-medium">输入文本 (如: 代码工具盒)</div>
+            <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">输入文本 (如: 代码工具盒)</div>
             <n-input
               v-model:value="unicodeInput"
               type="textarea"
@@ -167,7 +167,7 @@
             />
           </div>
           <div class="space-y-1">
-            <div class="text-xs text-zinc-400 font-medium">转换结果</div>
+            <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">转换结果</div>
             <n-input
               v-model:value="unicodeOutput"
               type="textarea"
@@ -194,7 +194,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-1">
-            <div class="text-xs text-zinc-400 font-medium">输入内容</div>
+            <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">输入内容</div>
             <n-input
               v-model:value="hexInput"
               type="textarea"
@@ -203,7 +203,7 @@
             />
           </div>
           <div class="space-y-1">
-            <div class="text-xs text-zinc-400 font-medium">Hex 转换结果</div>
+            <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Hex 转换结果</div>
             <n-input
               v-model:value="hexOutput"
               type="textarea"
