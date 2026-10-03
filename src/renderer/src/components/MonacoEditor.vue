@@ -6,6 +6,47 @@
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import * as monaco from 'monaco-editor'
 
+// 注册 CodeKit 专有的 JSON 高亮主题（紫色属性键名、鲜绿字符串、蓝色数字、红橙布尔）
+function ensureThemes(): void {
+  monaco.editor.defineTheme('codekit-light', {
+    base: 'vs',
+    inherit: true,
+    rules: [
+      { token: 'string.key.json', foreground: '92278f', fontStyle: 'bold' },
+      { token: 'string.value.json', foreground: '00a65a' },
+      { token: 'number.json', foreground: '2563eb' },
+      { token: 'keyword.json', foreground: 'ea580c', fontStyle: 'bold' },
+      { token: 'delimiter.bracket.json', foreground: '334155' },
+      { token: 'delimiter.comma.json', foreground: '64748b' },
+      { token: 'delimiter.colon.json', foreground: '64748b' }
+    ],
+    colors: {
+      'editor.background': '#ffffff',
+      'editorLineNumber.foreground': '#94a3b8',
+      'editorLineNumber.activeForeground': '#334155'
+    }
+  })
+
+  monaco.editor.defineTheme('codekit-dark', {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+      { token: 'string.key.json', foreground: 'c084fc', fontStyle: 'bold' },
+      { token: 'string.value.json', foreground: '4ade80' },
+      { token: 'number.json', foreground: '60a5fa' },
+      { token: 'keyword.json', foreground: 'fb7185', fontStyle: 'bold' },
+      { token: 'delimiter.bracket.json', foreground: 'cbd5e1' },
+      { token: 'delimiter.comma.json', foreground: '94a3b8' },
+      { token: 'delimiter.colon.json', foreground: '94a3b8' }
+    ],
+    colors: {
+      'editor.background': '#18181c',
+      'editorLineNumber.foreground': '#52525b',
+      'editorLineNumber.activeForeground': '#cbd5e1'
+    }
+  })
+}
+
 const props = withDefaults(
   defineProps<{
     modelValue?: string
@@ -14,14 +55,16 @@ const props = withDefaults(
     theme?: string
     wordWrap?: 'on' | 'off'
     minimap?: boolean
+    fontSize?: number
   }>(),
   {
     modelValue: '',
     language: 'json',
     readOnly: false,
-    theme: 'vs-dark',
+    theme: 'codekit-dark',
     wordWrap: 'on',
-    minimap: false
+    minimap: false,
+    fontSize: 14
   }
 )
 
@@ -37,6 +80,8 @@ let resizeObserver: ResizeObserver | null = null
 onMounted(() => {
   if (!containerRef.value) return
 
+  ensureThemes()
+
   editorInstance = monaco.editor.create(containerRef.value, {
     value: props.modelValue,
     language: props.language,
@@ -45,9 +90,14 @@ onMounted(() => {
     wordWrap: props.wordWrap,
     minimap: { enabled: props.minimap },
     automaticLayout: true,
-    fontSize: 13,
+    fontSize: props.fontSize,
+    lineHeight: Math.round(props.fontSize * 1.65),
     fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace",
     lineNumbers: 'on',
+    folding: true,
+    showFoldingControls: 'always',
+    foldingHighlight: true,
+    glyphMargin: true,
     scrollBeyondLastLine: false,
     renderLineHighlight: 'all',
     tabSize: 2,
@@ -90,7 +140,20 @@ watch(
 watch(
   () => props.theme,
   (newTheme) => {
+    ensureThemes()
     monaco.editor.setTheme(newTheme)
+  }
+)
+
+watch(
+  () => props.fontSize,
+  (newSize) => {
+    if (editorInstance && newSize) {
+      editorInstance.updateOptions({
+        fontSize: newSize,
+        lineHeight: Math.round(newSize * 1.65)
+      })
+    }
   }
 )
 
