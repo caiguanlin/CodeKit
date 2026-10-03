@@ -30,8 +30,20 @@ const props = withDefaults(
   }
 )
 
+const emit = defineEmits<{
+  (e: 'collapseChange', hasCollapsed: boolean): void
+}>()
+
 const fontSize = ref(props.initialFontSize || 15)
 const collapsedSet = ref<Set<string>>(new Set())
+
+watch(
+  () => props.json,
+  () => {
+    collapsedSet.value = new Set()
+    emit('collapseChange', false)
+  }
+)
 
 const parsedData = computed(() => {
   if (props.json === '' || props.json === null || props.json === undefined) {
@@ -58,10 +70,12 @@ provide('jsonViewerToggleCollapse', (path: string) => {
   }
   // 触发响应式更新
   collapsedSet.value = new Set(collapsedSet.value)
+  emit('collapseChange', collapsedSet.value.size > 0)
 })
 
 function expandAll(): void {
   collapsedSet.value = new Set()
+  emit('collapseChange', false)
 }
 
 function collapseAll(): void {
@@ -83,6 +97,17 @@ function collapseAll(): void {
     collect(parsedData.value, 'root')
   }
   collapsedSet.value = newSet
+  emit('collapseChange', newSet.size > 0)
+}
+
+function toggleExpandCollapse(): boolean {
+  if (collapsedSet.value.size > 0) {
+    expandAll()
+    return false
+  } else {
+    collapseAll()
+    return true
+  }
 }
 
 function increaseFontSize(): void {
@@ -106,6 +131,7 @@ function setFontSize(size: number): void {
 defineExpose({
   expandAll,
   collapseAll,
+  toggleExpandCollapse,
   increaseFontSize,
   decreaseFontSize,
   setFontSize,

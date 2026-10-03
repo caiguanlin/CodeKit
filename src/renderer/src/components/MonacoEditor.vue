@@ -56,6 +56,7 @@ const props = withDefaults(
     wordWrap?: 'on' | 'off'
     minimap?: boolean
     fontSize?: number
+    tabSize?: number
   }>(),
   {
     modelValue: '',
@@ -64,7 +65,8 @@ const props = withDefaults(
     theme: 'codekit-dark',
     wordWrap: 'on',
     minimap: false,
-    fontSize: 14
+    fontSize: 14,
+    tabSize: 4
   }
 )
 
@@ -100,7 +102,7 @@ onMounted(() => {
     glyphMargin: true,
     scrollBeyondLastLine: false,
     renderLineHighlight: 'all',
-    tabSize: 2,
+    tabSize: props.tabSize,
     renderWhitespace: 'selection'
   })
 
