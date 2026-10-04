@@ -91,6 +91,7 @@
         <div class="flex-1 min-h-0 p-2">
           <MonacoEditor
             ref="editorRef"
+            class="json-input-editor"
             v-model="jsonInput"
             language="json"
             :theme="monacoTheme"
@@ -269,6 +270,26 @@
               </template>
               复制结果
             </n-tooltip>
+            <n-tooltip to="body" placement="bottom" :show-arrow="false">
+              <template #trigger>
+                <n-button
+                  size="tiny"
+                  quaternary
+                  :disabled="!isOutputJsonValid || isDownloading"
+                  :loading="isDownloading"
+                  aria-label="下载结果"
+                  @click="downloadOutput"
+                >
+                  <template #icon>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M12 3v12"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                    </svg>
+                  </template>
+                </n-button>
+              </template>
+              下载结果
+            </n-tooltip>
           </div>
         </div>
 
@@ -335,6 +356,7 @@ const settingsStore = useSettingsStore()
 
 const jsonInput = ref('')
 const jsonOutput = ref('')
+const isDownloading = ref(false)
 const currentMode = ref<ConversionMode>('format4')
 const viewerFontSize = ref(DEFAULT_FONT_SIZE)
 const showFontSizePopover = ref(false)
@@ -387,8 +409,7 @@ const outputLineCount = computed(() => {
 
 // 监听输入变化，自动校验并实时刷新右侧转换结果
 watch(jsonInput, () => {
-  validateJson()
-  updateOutput(false)
+  updateOutput()
 })
 
 watch(jsonOutput, () => {
@@ -419,20 +440,15 @@ function validateJson(): boolean {
   }
 }
 
-function updateOutput(isManual = false): void {
+function updateOutput(): void {
+  const isValid = validateJson()
   if (!jsonInput.value.trim()) {
     jsonOutput.value = ''
     return
   }
 
-  const isValid = validateJson()
   if (!isValid) {
-    if (isManual) {
-      message.error('左侧 JSON 格式有误，无法转换')
-      jsonOutput.value = `// 无法转换：左侧 JSON 语法错误\n// 错误信息: ${errorMessage.value}`
-    } else {
-      jsonOutput.value = `// 等待左侧输入有效的 JSON 内容...\n// 错误信息: ${errorMessage.value}`
-    }
+    jsonOutput.value = `// 等待左侧输入有效的 JSON 内容...\n// 错误信息: ${errorMessage.value}`
     return
   }
 
@@ -441,16 +457,13 @@ function updateOutput(isManual = false): void {
     switch (currentMode.value) {
       case 'format4':
         jsonOutput.value = JSON.stringify(parsed, null, 4)
-        if (isManual) message.success('已格式化')
         break
       case 'minify':
         jsonOutput.value = JSON.stringify(parsed)
-        if (isManual) message.success('已压缩为单行')
         break
     }
   } catch (err: any) {
     jsonOutput.value = `// 转换异常: ${err.message}`
-    if (isManual) message.error(err.message)
   }
 }
 
@@ -459,7 +472,33 @@ function switchMode(mode: ConversionMode): void {
     isTreeCollapsed.value = false
   }
   currentMode.value = mode
-  updateOutput(true)
+  updateOutput()
+}
+
+function downloadOutput(): void {
+  if (!isOutputJsonValid.value || isDownloading.value) return
+
+  const content = jsonOutput.value
+  const compressed = currentMode.value === 'minify'
+  isDownloading.value = true
+  try {
+    // 使用 Electron 内置下载流程，避免热更新时 preload 与主进程接口不同步。
+    const url = URL.createObjectURL(new Blob([content], { type: 'application/json;charset=utf-8' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = compressed ? 'result.min.json' : 'result.json'
+    try {
+      document.body.appendChild(link)
+      link.click()
+    } finally {
+      link.remove()
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+    }
+  } catch (err: unknown) {
+    message.error(`下载失败: ${err instanceof Error ? err.message : String(err)}`)
+  } finally {
+    isDownloading.value = false
+  }
 }
 
 async function copyContent(text: string, label = '内容'): Promise<void> {
@@ -508,6 +547,11 @@ function handleToggleExpandCollapse(): void {
 </script>
 
 <style scoped>
+/* Monaco 的默认轮廓被外层裁切后会在输入区顶部留下蓝线。 */
+.json-input-editor :deep(.monaco-editor) {
+  outline: none;
+}
+
 .json-panel-header {
   display: flex;
   align-items: center;
