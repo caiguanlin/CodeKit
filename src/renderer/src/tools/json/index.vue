@@ -1,6 +1,6 @@
 <template>
   <div class="h-full flex flex-col space-y-3 min-h-0">
-    <!-- 顶部统一功能工具栏（横跨全宽，集中放置转换模式与视图操作） -->
+    <!-- 转换功能 -->
     <div
       class="px-3.5 py-2 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] flex items-center justify-between gap-3 flex-wrap shrink-0 shadow-sm transition-colors"
     >
@@ -14,7 +14,7 @@
           :secondary="currentMode !== 'format4'"
           @click="switchMode('format4')"
         >
-          格式化 (4空格)
+          格式化
         </n-button>
         <n-button
           size="tiny"
@@ -22,126 +22,11 @@
           :secondary="currentMode !== 'minify'"
           @click="switchMode('minify')"
         >
-          紧凑压缩
-        </n-button>
-        <n-button
-          size="tiny"
-          :type="currentMode === 'escape' ? 'primary' : 'default'"
-          :secondary="currentMode !== 'escape'"
-          @click="switchMode('escape')"
-        >
-          转义字符串
-        </n-button>
-        <n-button
-          size="tiny"
-          :type="currentMode === 'unescape' ? 'primary' : 'default'"
-          :secondary="currentMode !== 'unescape'"
-          @click="switchMode('unescape')"
-        >
-          去除转义
-        </n-button>
-        <n-button
-          size="tiny"
-          :type="currentMode === 'ts' ? 'primary' : 'default'"
-          :secondary="currentMode !== 'ts'"
-          @click="switchMode('ts')"
-        >
-          转 TS 接口
-        </n-button>
-        <n-button
-          size="tiny"
-          :type="currentMode === 'go' ? 'primary' : 'default'"
-          :secondary="currentMode !== 'go'"
-          @click="switchMode('go')"
-        >
-          转 Go 结构体
+          压缩
         </n-button>
       </div>
 
-      <!-- 右侧：视图控制与快捷操作 -->
-      <div class="flex items-center space-x-1.5 shrink-0 ml-auto">
-        <!-- 当处于 JSON 格式化模式时，允许在树形折叠视图和纯代码视图之间切换 -->
-        <div v-if="isJsonFormattedMode" class="flex items-center bg-black/5 dark:bg-white/5 rounded p-0.5 mr-0.5">
-          <button
-            type="button"
-            class="px-2 py-0.5 text-xs rounded transition-colors"
-            :class="viewType === 'tree' ? 'bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-sm font-medium' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'"
-            @click="viewType = 'tree'"
-          >
-            高亮折叠
-          </button>
-          <button
-            type="button"
-            class="px-2 py-0.5 text-xs rounded transition-colors"
-            :class="viewType === 'code' ? 'bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-sm font-medium' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'"
-            @click="viewType = 'code'"
-          >
-            纯代码
-          </button>
-        </div>
-
-        <!-- 树形视图专有操作：全部展开/折叠合并切换图标 -->
-        <n-button
-          v-if="isJsonFormattedMode && viewType === 'tree'"
-          size="tiny"
-          quaternary
-          :title="isTreeCollapsed ? '全部展开' : '全部折叠'"
-          :aria-label="isTreeCollapsed ? '全部展开' : '全部折叠'"
-          @click="handleToggleExpandCollapse"
-        >
-          <template #icon>
-            <!-- 折叠状态显示展开图标 -->
-            <svg
-              v-if="isTreeCollapsed"
-              class="w-3.5 h-3.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <polyline points="7 9 12 4 17 9"></polyline>
-              <polyline points="7 15 12 20 17 15"></polyline>
-            </svg>
-            <!-- 展开状态显示折叠图标 -->
-            <svg
-              v-else
-              class="w-3.5 h-3.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <polyline points="7 4 12 9 17 4"></polyline>
-              <polyline points="7 20 12 15 17 20"></polyline>
-            </svg>
-          </template>
-        </n-button>
-
-        <!-- 字号调节器 (A- / 15px / A+) -->
-        <div class="flex items-center space-x-0.5 bg-black/5 dark:bg-white/5 rounded px-1 py-0.5 text-xs text-zinc-500 dark:text-zinc-400 font-mono">
-          <button
-            type="button"
-            class="px-1 hover:text-zinc-900 dark:hover:text-zinc-100 font-bold"
-            title="减小字号"
-            @click="handleDecreaseFontSize"
-          >
-            A-
-          </button>
-          <span class="px-1 text-[11px] select-none">{{ viewerFontSize }}px</span>
-          <button
-            type="button"
-            class="px-1 hover:text-zinc-900 dark:hover:text-zinc-100 font-bold"
-            title="增大字号"
-            @click="handleIncreaseFontSize"
-          >
-            A+
-          </button>
-        </div>
-
+      <div class="shrink-0 ml-auto">
         <n-button
           v-if="jsonOutput"
           size="tiny"
@@ -160,10 +45,8 @@
       <div
         class="flex-1 min-w-0 h-full flex flex-col rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] overflow-hidden transition-colors shadow-sm"
       >
-        <!-- 左侧顶部工具栏 (固定 h-9 高度，与右侧严格对齐) -->
-        <div
-          class="h-9 px-3 flex items-center justify-between border-b border-[var(--border-color)] bg-[var(--card-sub-bg)] shrink-0"
-        >
+        <!-- 输入工具栏 -->
+        <div class="json-panel-header">
           <div class="flex items-center space-x-2">
             <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-200">JSON 输入</span>
             <span class="text-[11px] text-zinc-400 dark:text-zinc-500">原始数据</span>
@@ -211,7 +94,7 @@
             v-model="jsonInput"
             language="json"
             :theme="monacoTheme"
-            :font-size="viewerFontSize"
+            :font-size="DEFAULT_FONT_SIZE"
           />
         </div>
 
@@ -250,18 +133,77 @@
       <div
         class="flex-1 min-w-0 h-full flex flex-col rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] overflow-hidden transition-colors shadow-sm"
       >
-        <!-- 右侧顶部工具栏 (固定 h-9 高度，与左侧严格对齐) -->
-        <div
-          class="h-9 px-3 flex items-center justify-between border-b border-[var(--border-color)] bg-[var(--card-sub-bg)] shrink-0"
-        >
-          <div class="flex items-center space-x-2">
+        <!-- 结果工具栏 -->
+        <div class="json-panel-header">
+          <div class="flex items-center space-x-2 shrink-0">
             <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-200">转换结果</span>
             <n-tag size="small" :bordered="false" type="primary" class="text-[11px]">
               {{ currentModeTitle }}
             </n-tag>
           </div>
 
-          <div class="flex items-center space-x-1">
+          <div class="json-result-actions">
+            <div class="json-font-control" role="group" aria-label="转换结果字号">
+              <span class="json-font-label">字号</span>
+              <div class="json-font-stepper">
+                <button
+                  type="button"
+                  class="json-font-button"
+                  title="减小字号"
+                  aria-label="减小结果字号"
+                  :disabled="viewerFontSize <= MIN_FONT_SIZE"
+                  @click="handleDecreaseFontSize"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <path d="M5 12h14"></path>
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="json-font-value"
+                  :title="`恢复默认字号（${DEFAULT_FONT_SIZE}px）`"
+                  :aria-label="`当前字号 ${viewerFontSize}px，点击恢复默认字号 ${DEFAULT_FONT_SIZE}px`"
+                  @click="viewerFontSize = DEFAULT_FONT_SIZE"
+                >
+                  <span aria-live="polite">{{ viewerFontSize }}</span><span class="json-font-unit">px</span>
+                </button>
+                <button
+                  type="button"
+                  class="json-font-button"
+                  title="增大字号"
+                  aria-label="增大结果字号"
+                  :disabled="viewerFontSize >= MAX_FONT_SIZE"
+                  @click="handleIncreaseFontSize"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <path d="M5 12h14M12 5v14"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <span class="json-action-divider" aria-hidden="true"></span>
+            <n-button
+              v-if="isJsonFormattedMode"
+              size="tiny"
+              quaternary
+              :disabled="!isOutputJsonValid"
+              :title="isTreeCollapsed ? '全部展开' : '全部折叠'"
+              :aria-label="isTreeCollapsed ? '全部展开' : '全部折叠'"
+              @click="handleToggleExpandCollapse"
+            >
+              <template #icon>
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <template v-if="isTreeCollapsed">
+                    <polyline points="7 9 12 4 17 9"></polyline>
+                    <polyline points="7 15 12 20 17 15"></polyline>
+                  </template>
+                  <template v-else>
+                    <polyline points="7 4 12 9 17 4"></polyline>
+                    <polyline points="7 20 12 15 17 20"></polyline>
+                  </template>
+                </svg>
+              </template>
+            </n-button>
             <n-button
               size="tiny"
               type="primary"
@@ -282,20 +224,19 @@
 
         <!-- 右侧主体展示区域 -->
         <div class="flex-1 min-h-0 p-2">
-          <!-- 1. 树形折叠高亮展示 -->
           <JsonViewer
-            v-if="isJsonFormattedMode && viewType === 'tree' && isOutputJsonValid"
+            v-if="isJsonFormattedMode && (isOutputJsonValid || !jsonOutput)"
             ref="jsonViewerRef"
             :json="jsonOutput"
             :initial-font-size="viewerFontSize"
             @collapse-change="(collapsed: boolean) => (isTreeCollapsed = collapsed)"
           />
 
-          <!-- 2. Monaco 代码编辑器模式 -->
+          <!-- 单行压缩结果或语法错误信息 -->
           <MonacoEditor
             v-else
             v-model="jsonOutput"
-            :language="outputLanguage"
+            language="json"
             :theme="monacoTheme"
             :font-size="viewerFontSize"
             :read-only="true"
@@ -330,7 +271,11 @@ import MonacoEditor from '@/components/MonacoEditor.vue'
 import JsonViewer from '@/components/JsonViewer/JsonViewer.vue'
 import { useSettingsStore } from '@/stores/settings'
 
-type ConversionMode = 'format4' | 'minify' | 'escape' | 'unescape' | 'ts' | 'go'
+type ConversionMode = 'format4' | 'minify'
+
+const DEFAULT_FONT_SIZE = 15
+const MIN_FONT_SIZE = 12
+const MAX_FONT_SIZE = 22
 
 const message = useMessage()
 const settingsStore = useSettingsStore()
@@ -338,8 +283,7 @@ const settingsStore = useSettingsStore()
 const jsonInput = ref('')
 const jsonOutput = ref('')
 const currentMode = ref<ConversionMode>('format4')
-const viewType = ref<'tree' | 'code'>('tree')
-const viewerFontSize = ref(15)
+const viewerFontSize = ref(DEFAULT_FONT_SIZE)
 const isTreeCollapsed = ref(false)
 const validationStatus = ref<'valid' | 'invalid' | 'empty'>('empty')
 const errorMessage = ref('')
@@ -347,15 +291,11 @@ const editorRef = ref<InstanceType<typeof MonacoEditor> | null>(null)
 const jsonViewerRef = ref<InstanceType<typeof JsonViewer> | null>(null)
 
 const modeNames: Record<ConversionMode, string> = {
-  format4: '格式化 (4空格)',
-  minify: '紧凑压缩',
-  escape: '转义字符串',
-  unescape: '去除转义',
-  ts: 'TypeScript 接口',
-  go: 'Go 结构体'
+  format4: '格式化',
+  minify: '压缩'
 }
 
-const currentModeTitle = computed(() => modeNames[currentMode.value] || '格式化 (4空格)')
+const currentModeTitle = computed(() => modeNames[currentMode.value])
 
 const isJsonFormattedMode = computed(() => {
   return currentMode.value === 'format4'
@@ -373,21 +313,6 @@ const isOutputJsonValid = computed(() => {
 
 const monacoTheme = computed(() => {
   return settingsStore.theme === 'dark' ? 'codekit-dark' : 'codekit-light'
-})
-
-const outputLanguage = computed(() => {
-  switch (currentMode.value) {
-    case 'ts':
-      return 'typescript'
-    case 'go':
-      return 'go'
-    case 'escape':
-    case 'unescape':
-    case 'format4':
-    case 'minify':
-    default:
-      return 'json'
-  }
 })
 
 const lineCount = computed(() => {
@@ -409,6 +334,9 @@ const outputLineCount = computed(() => {
 watch(jsonInput, () => {
   validateJson()
   updateOutput(false)
+})
+
+watch(jsonOutput, () => {
   isTreeCollapsed.value = false
 })
 
@@ -436,56 +364,12 @@ function validateJson(): boolean {
   }
 }
 
-function unescapeContent(input: string): string {
-  const raw = input.trim()
-  if (!raw) return ''
-  try {
-    if (raw.startsWith('"') && raw.endsWith('"')) {
-      const parsed = JSON.parse(raw)
-      return typeof parsed === 'string' ? parsed : JSON.stringify(parsed, null, 4)
-    }
-  } catch {
-    // 忽略解析错误，回退到正则替换
-  }
-  return raw
-    .replace(/\\"/g, '"')
-    .replace(/\\\\/g, '\\')
-    .replace(/\\n/g, '\n')
-    .replace(/\\r/g, '\r')
-    .replace(/\\t/g, '\t')
-}
-
 function updateOutput(isManual = false): void {
   if (!jsonInput.value.trim()) {
     jsonOutput.value = ''
     return
   }
 
-  // 1. 转义字符串模式 (允许任意文本)
-  if (currentMode.value === 'escape') {
-    try {
-      jsonOutput.value = JSON.stringify(jsonInput.value)
-      if (isManual) message.success('已转义为字符串')
-    } catch (err: any) {
-      jsonOutput.value = `// 转义失败: ${err.message}`
-      if (isManual) message.error(err.message)
-    }
-    return
-  }
-
-  // 2. 去除转义模式
-  if (currentMode.value === 'unescape') {
-    try {
-      jsonOutput.value = unescapeContent(jsonInput.value)
-      if (isManual) message.success('已去除转义')
-    } catch (err: any) {
-      jsonOutput.value = `// 去除转义失败: ${err.message}`
-      if (isManual) message.error(err.message)
-    }
-    return
-  }
-
-  // 3. 基于 JSON 语法的模式 (format4, minify, ts, go)
   const isValid = validateJson()
   if (!isValid) {
     if (isManual) {
@@ -502,19 +386,11 @@ function updateOutput(isManual = false): void {
     switch (currentMode.value) {
       case 'format4':
         jsonOutput.value = JSON.stringify(parsed, null, 4)
-        if (isManual) message.success('已格式化 (4空格缩进)')
+        if (isManual) message.success('已格式化')
         break
       case 'minify':
         jsonOutput.value = JSON.stringify(parsed)
-        if (isManual) message.success('已紧凑压缩为单行')
-        break
-      case 'ts':
-        jsonOutput.value = generateTypeScriptInterface(parsed, 'RootObject')
-        if (isManual) message.success('已生成 TypeScript 接口')
-        break
-      case 'go':
-        jsonOutput.value = generateGoStruct(parsed, 'RootObject')
-        if (isManual) message.success('已生成 Go Struct 结构体')
+        if (isManual) message.success('已压缩为单行')
         break
     }
   } catch (err: any) {
@@ -524,6 +400,9 @@ function updateOutput(isManual = false): void {
 }
 
 function switchMode(mode: ConversionMode): void {
+  if (currentMode.value !== mode) {
+    isTreeCollapsed.value = false
+  }
   currentMode.value = mode
   updateOutput(true)
 }
@@ -566,87 +445,115 @@ function clearContent(): void {
 function handleToggleExpandCollapse(): void {
   if (isTreeCollapsed.value) {
     jsonViewerRef.value?.expandAll()
-    isTreeCollapsed.value = false
   } else {
     jsonViewerRef.value?.collapseAll()
-    isTreeCollapsed.value = true
   }
 }
 
 function handleIncreaseFontSize(): void {
-  if (viewerFontSize.value < 22) {
+  if (viewerFontSize.value < MAX_FONT_SIZE) {
     viewerFontSize.value += 1
   }
 }
 
 function handleDecreaseFontSize(): void {
-  if (viewerFontSize.value > 12) {
+  if (viewerFontSize.value > MIN_FONT_SIZE) {
     viewerFontSize.value -= 1
   }
 }
-
-function generateTypeScriptInterface(obj: any, rootName = 'RootObject'): string {
-  const interfaces: string[] = []
-
-  function parseObject(val: any, name: string): string {
-    if (Array.isArray(val)) {
-      if (val.length === 0) return 'any[]'
-      const firstType = parseObject(val[0], `${name}Item`)
-      return `${firstType}[]`
-    }
-    if (val !== null && typeof val === 'object') {
-      const typeName = capitalize(name)
-      const lines: string[] = [`export interface ${typeName} {`]
-      for (const [key, v] of Object.entries(val)) {
-        const propType = parseObject(v, `${name}_${key}`)
-        lines.push(`  ${key}: ${propType};`)
-      }
-      lines.push('}')
-      interfaces.push(lines.join('\n'))
-      return typeName
-    }
-    if (val === null) return 'null'
-    return typeof val
-  }
-
-  parseObject(obj, rootName)
-  return interfaces.join('\n\n')
-}
-
-function generateGoStruct(obj: any, rootName = 'RootObject'): string {
-  const structs: string[] = []
-
-  function parseObject(val: any, name: string): string {
-    if (Array.isArray(val)) {
-      if (val.length === 0) return '[]interface{}'
-      const firstType = parseObject(val[0], `${name}Item`)
-      return `[]${firstType}`
-    }
-    if (val !== null && typeof val === 'object') {
-      const typeName = capitalize(name)
-      const lines: string[] = [`type ${typeName} struct {`]
-      for (const [key, v] of Object.entries(val)) {
-        const fieldName = capitalize(key)
-        const fieldType = parseObject(v, `${name}_${key}`)
-        lines.push(`\t${fieldName} ${fieldType} \`json:"${key}"\``)
-      }
-      lines.push('}')
-      structs.push(lines.join('\n'))
-      return typeName
-    }
-    if (typeof val === 'number') {
-      return Number.isInteger(val) ? 'int64' : 'float64'
-    }
-    if (typeof val === 'boolean') return 'bool'
-    if (typeof val === 'string') return 'string'
-    return 'interface{}'
-  }
-
-  parseObject(obj, rootName)
-  return structs.join('\n\n')
-}
-
-function capitalize(s: string): string {
-  return s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/[^a-zA-Z0-9]/g, '') : ''
-}
 </script>
+
+<style scoped>
+.json-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  min-height: 48px;
+  padding: 8px 12px;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--card-sub-bg);
+}
+
+.json-result-actions,
+.json-font-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.json-result-actions {
+  margin-left: auto;
+}
+
+.json-font-label {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.json-font-stepper {
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--card-bg);
+}
+
+.json-font-button,
+.json-font-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  border-radius: 5px;
+  color: var(--text-secondary);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.json-font-button {
+  width: 26px;
+}
+
+.json-font-value {
+  min-width: 48px;
+  gap: 3px;
+  padding: 0 4px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.json-font-unit {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.json-font-button:hover:not(:disabled),
+.json-font-value:hover {
+  color: var(--text-primary);
+  background: var(--hover-bg);
+}
+
+.json-font-button:focus-visible,
+.json-font-value:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 1px;
+}
+
+.json-font-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.json-action-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--border-color);
+}
+</style>

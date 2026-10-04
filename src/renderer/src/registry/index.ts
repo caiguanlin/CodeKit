@@ -44,11 +44,11 @@ export const TOOLS: ToolMetadata[] = [
     id: 'json',
     name: 'JSON 工具盒',
     shortName: 'JSON',
-    description: 'JSON 格式化、压缩校验、转 TS 接口及 Go 结构体',
+    description: 'JSON 格式化、压缩与语法校验',
     category: 'format',
     icon: 'CodeSlashOutline',
     accentColor: '#10b981',
-    keywords: ['json', 'format', 'minify', 'ts', 'go', 'struct', 'schema', 'geshihua'],
+    keywords: ['json', 'format', 'minify', 'validate', 'geshihua', 'yasuo'],
     route: '/tools/json',
     component: () => import('@/tools/json/index.vue')
   },

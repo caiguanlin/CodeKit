@@ -9,33 +9,42 @@
       @keydown.esc="close"
     >
       <!-- 搜索输入框 -->
-      <div class="flex items-center px-4 py-3 border-b border-zinc-200 dark:border-[#2d2d35] bg-zinc-50 dark:bg-[#1a1a20]">
-        <svg class="w-5 h-5 text-emerald-500 dark:text-emerald-400 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.35-4.35"></path>
-        </svg>
-        <input
-          ref="searchInputRef"
-          v-model="query"
-          type="text"
-          placeholder="搜索工具或功能，例如：JSON、时间戳、Base64、正则、UUID..."
-          class="flex-1 bg-transparent text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none"
-          @keydown.down.prevent="navigate(1)"
-          @keydown.up.prevent="navigate(-1)"
-          @keydown.enter.prevent="selectCurrent"
-        />
-        <button
-          v-if="query"
-          type="button"
-          @click="query = ''"
-          class="p-1 text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
-        >
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 6 6 18"></path>
-            <path d="m6 6 12 12"></path>
+      <div class="command-search-header">
+        <div class="command-search-field" @click="searchInputRef?.focus()">
+          <svg class="w-5 h-5 shrink-0 text-emerald-500 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
           </svg>
-        </button>
-        <kbd class="ml-2 px-1.5 py-0.5 text-[10px] font-mono rounded bg-white dark:bg-[#272730] text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-[#3a3a46]">Esc</kbd>
+          <input
+            ref="searchInputRef"
+            v-model="query"
+            type="text"
+            placeholder="搜索工具或功能…"
+            aria-label="搜索工具或功能"
+            aria-describedby="command-search-hint"
+            autocomplete="off"
+            spellcheck="false"
+            class="command-search-input"
+            @keydown.down.prevent="navigate(1)"
+            @keydown.up.prevent="navigate(-1)"
+            @keydown.enter.prevent="selectCurrent"
+          />
+          <button
+            v-if="query"
+            type="button"
+            @click.stop="clearQuery"
+            aria-label="清空搜索"
+            title="清空搜索"
+            class="command-search-clear"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+          <kbd class="command-search-shortcut" title="按 Esc 关闭">Esc</kbd>
+        </div>
+        <p id="command-search-hint" class="command-search-hint">快速查找，例如 JSON、时间戳、Base64</p>
       </div>
 
       <!-- 搜索结果列表 -->
@@ -192,7 +201,103 @@ function selectCurrent(): void {
   }
 }
 
+function clearQuery(): void {
+  query.value = ''
+  searchInputRef.value?.focus()
+}
+
 function close(): void {
   settingsStore.closeCommandPalette()
 }
 </script>
+
+<style scoped>
+.command-search-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.command-search-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--card-sub-bg);
+  cursor: text;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.command-search-field:focus-within {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgb(16 185 129 / 10%);
+}
+
+/* Reset Chromium's native input chrome inside the shared search surface. */
+.command-search-input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 46px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  appearance: none;
+  background: transparent;
+  color: var(--text-primary);
+  caret-color: #10b981;
+  font: inherit;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.command-search-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.command-search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.command-search-clear:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.command-search-clear:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+.command-search-shortcut {
+  flex-shrink: 0;
+  padding: 2px 5px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 16px;
+}
+
+.command-search-hint {
+  margin: 10px 2px 0;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 16px;
+}
+</style>

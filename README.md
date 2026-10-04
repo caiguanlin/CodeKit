@@ -25,7 +25,7 @@
 
 | 模块 | 功能亮点 | 内核引擎 |
 | :--- | :--- | :--- |
-| **JSON 工具盒** | 2/4空格缩进格式化、紧凑压缩、转义/去转义、一键生成 TypeScript Interface 与 Go Struct 结构体 | Monaco Editor |
+| **JSON 工具盒** | 格式化（4 空格缩进）、压缩、语法校验、可折叠高亮展示与结果字号调节 | Monaco Editor / JSON Viewer |
 | **时间戳转换器** | 毫秒级实时跳动时钟、10位/13位双向转换、UTC/ISO/本地时间多维解析、相对时间计算 | Day.js |
 | **编解码与哈希** | Base64 编码/解码、URL Component 编解码、Unicode 中文互转、Hex 转换、MD5/SHA-1/SHA-256/SHA-512 哈希 | CryptoJS |
 | **万能生成器** | UUID v4 / v7 批量生成、可调长度与符号集的高强度密码/密钥生成器、NanoID 快速生成 | UUID / NanoID |
