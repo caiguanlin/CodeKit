@@ -1,6 +1,11 @@
 <template>
   <div class="json-viewer-container w-full h-full overflow-auto p-4 bg-white dark:bg-[#18181c] rounded-md border border-[var(--border-color)] transition-colors select-text">
-    <div v-if="parsedData !== undefined" class="min-w-fit">
+    <div
+      v-if="parsedData !== undefined"
+      class="json-tree min-w-fit"
+      :class="{ 'has-line-numbers': showLineNumbers }"
+      :style="{ fontSize: `${fontSize}px`, '--json-gutter-width': `${Math.max(2, String(lineLayout.total).length) + 2}ch` }"
+    >
       <JsonNode
         :val="parsedData"
         :key-name="null"
@@ -23,10 +28,12 @@ const props = withDefaults(
   defineProps<{
     json?: string | any
     initialFontSize?: number
+    showLineNumbers?: boolean
   }>(),
   {
     json: '',
-    initialFontSize: 15
+    initialFontSize: 15,
+    showLineNumbers: false
   }
 )
 
@@ -59,7 +66,27 @@ const parsedData = computed(() => {
   }
 })
 
+// 使用完整格式化结果的行号，折叠时隐藏子行，但不改变后续行号。
+const lineLayout = computed(() => {
+  const lines = new Map<string, { start: number; end: number }>()
+  let nextLine = 1
+
+  function visit(value: any, path: string): void {
+    const start = nextLine++
+    const entries = value !== null && typeof value === 'object' ? Object.entries(value) : []
+    for (const [key, child] of entries) {
+      visit(child, Array.isArray(value) ? `${path}[${key}]` : `${path}[${JSON.stringify(key)}]`)
+    }
+    const end = entries.length > 0 ? nextLine++ : start
+    lines.set(path, { start, end })
+  }
+
+  if (parsedData.value !== undefined) visit(parsedData.value, 'root')
+  return { lines, total: nextLine - 1 }
+})
+
 // 提供给子孙节点的依赖注入
+provide('jsonViewerLineNumbers', computed(() => lineLayout.value.lines))
 provide('jsonViewerCollapsedSet', collapsedSet)
 provide('jsonViewerFontSize', fontSize)
 provide('jsonViewerToggleCollapse', (path: string) => {
@@ -88,7 +115,7 @@ function collapseAll(): void {
     } else if (val !== null && typeof val === 'object') {
       newSet.add(path)
       for (const [k, v] of Object.entries(val)) {
-        collect(v, `${path}.${k}`)
+        collect(v, `${path}[${JSON.stringify(k)}]`)
       }
     }
   }
@@ -143,5 +170,28 @@ defineExpose({
 .json-viewer-container {
   /* 允许水平滚动同时保留等宽排版 */
   font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, Menlo, Monaco, monospace;
+}
+
+.json-tree {
+  --json-indent: 25px;
+}
+
+.json-tree.has-line-numbers {
+  padding-left: var(--json-gutter-width);
+}
+
+.has-line-numbers :deep(.json-line::before) {
+  content: attr(data-line-number);
+  position: absolute;
+  top: 1px;
+  left: calc(-1 * var(--json-depth) * var(--json-indent) - var(--json-gutter-width));
+  width: var(--json-gutter-width);
+  padding-right: 16px;
+  color: var(--text-muted);
+  text-align: right;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  pointer-events: none;
 }
 </style>

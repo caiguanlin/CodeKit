@@ -57,6 +57,8 @@ const props = withDefaults(
     minimap?: boolean
     fontSize?: number
     tabSize?: number
+    lineNumbers?: boolean
+    compactGutter?: boolean
   }>(),
   {
     modelValue: '',
@@ -66,7 +68,9 @@ const props = withDefaults(
     wordWrap: 'on',
     minimap: false,
     fontSize: 14,
-    tabSize: 4
+    tabSize: 4,
+    lineNumbers: true,
+    compactGutter: false
   }
 )
 
@@ -78,6 +82,16 @@ const emit = defineEmits<{
 const containerRef = ref<HTMLDivElement | null>(null)
 let editorInstance: monaco.editor.IStandaloneCodeEditor | null = null
 let resizeObserver: ResizeObserver | null = null
+
+function gutterOptions(): monaco.editor.IEditorOptions {
+  return {
+    lineNumbers: props.lineNumbers ? 'on' : 'off',
+    lineNumbersMinChars: props.compactGutter ? 3 : 5,
+    glyphMargin: !props.compactGutter,
+    folding: !props.compactGutter,
+    lineDecorationsWidth: props.compactGutter ? 8 : 10
+  }
+}
 
 onMounted(() => {
   if (!containerRef.value) return
@@ -95,11 +109,9 @@ onMounted(() => {
     fontSize: props.fontSize,
     lineHeight: Math.round(props.fontSize * 1.65),
     fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace",
-    lineNumbers: 'on',
-    folding: true,
+    ...gutterOptions(),
     showFoldingControls: 'always',
     foldingHighlight: true,
-    glyphMargin: true,
     scrollBeyondLastLine: false,
     renderLineHighlight: 'all',
     tabSize: props.tabSize,
@@ -145,6 +157,11 @@ watch(
     ensureThemes()
     monaco.editor.setTheme(newTheme)
   }
+)
+
+watch(
+  () => [props.lineNumbers, props.compactGutter],
+  () => editorInstance?.updateOptions(gutterOptions())
 )
 
 watch(

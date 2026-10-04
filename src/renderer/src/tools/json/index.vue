@@ -95,6 +95,8 @@
             language="json"
             :theme="monacoTheme"
             :font-size="DEFAULT_FONT_SIZE"
+            :line-numbers="false"
+            compact-gutter
           />
         </div>
 
@@ -143,82 +145,142 @@
           </div>
 
           <div class="json-result-actions">
-            <div class="json-font-control" role="group" aria-label="转换结果字号">
-              <span class="json-font-label">字号</span>
-              <div class="json-font-stepper">
-                <button
-                  type="button"
-                  class="json-font-button"
-                  title="减小字号"
-                  aria-label="减小结果字号"
-                  :disabled="viewerFontSize <= MIN_FONT_SIZE"
-                  @click="handleDecreaseFontSize"
+            <n-popover
+              v-model:show="showFontSizePopover"
+              trigger="click"
+              placement="bottom-end"
+              to="body"
+              :show-arrow="false"
+              :width="264"
+              :theme-overrides="{ borderRadius: '20px', padding: '20px' }"
+            >
+              <template #trigger>
+                <n-tooltip
+                  to="body"
+                  placement="bottom"
+                  :show-arrow="false"
+                  :disabled="showFontSizePopover"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                    <path d="M5 12h14"></path>
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  class="json-font-value"
-                  :title="`恢复默认字号（${DEFAULT_FONT_SIZE}px）`"
-                  :aria-label="`当前字号 ${viewerFontSize}px，点击恢复默认字号 ${DEFAULT_FONT_SIZE}px`"
-                  @click="viewerFontSize = DEFAULT_FONT_SIZE"
-                >
-                  <span aria-live="polite">{{ viewerFontSize }}</span><span class="json-font-unit">px</span>
-                </button>
-                <button
-                  type="button"
-                  class="json-font-button"
-                  title="增大字号"
-                  aria-label="增大结果字号"
-                  :disabled="viewerFontSize >= MAX_FONT_SIZE"
-                  @click="handleIncreaseFontSize"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                    <path d="M5 12h14M12 5v14"></path>
-                  </svg>
-                </button>
+                  <template #trigger>
+                    <n-button
+                      size="tiny"
+                      quaternary
+                      :aria-label="`调整结果字号，当前 ${viewerFontSize}px`"
+                      :aria-expanded="showFontSizePopover"
+                      aria-controls="json-font-size-panel"
+                    >
+                      <template #icon>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M3 19 9 5l6 14M5 14h8M16 19l3.5-8L23 19M17.3 16h4.4"></path>
+                        </svg>
+                      </template>
+                    </n-button>
+                  </template>
+                  调整字号
+                </n-tooltip>
+              </template>
+              <div id="json-font-size-panel" class="json-font-panel" @keydown.esc="showFontSizePopover = false">
+                <div class="json-font-heading">
+                  <div class="json-font-current" aria-live="polite">{{ viewerFontSize }}<span>px</span></div>
+                  <div class="json-font-caption">结果字号</div>
+                  <button
+                    type="button"
+                    class="json-font-reset"
+                    :title="`恢复默认字号（${DEFAULT_FONT_SIZE}px）`"
+                    :aria-label="`恢复默认字号 ${DEFAULT_FONT_SIZE}px`"
+                    @click="viewerFontSize = DEFAULT_FONT_SIZE"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M3 10a9 9 0 1 1 2.6 8.4M3 4v6h6"></path>
+                    </svg>
+                  </button>
+                </div>
+                <div class="json-font-slider">
+                  <input
+                    v-model.number="viewerFontSize"
+                    type="range"
+                    :min="MIN_FONT_SIZE"
+                    :max="MAX_FONT_SIZE"
+                    step="1"
+                    :style="{ '--font-progress': `${((viewerFontSize - MIN_FONT_SIZE) / (MAX_FONT_SIZE - MIN_FONT_SIZE)) * 100}%` }"
+                    aria-label="结果字号"
+                    :aria-valuetext="`${viewerFontSize} 像素`"
+                  />
+                  <div class="json-font-stops" aria-hidden="true"><i v-for="stop in 6" :key="stop"></i></div>
+                </div>
+                <div class="json-font-range" aria-hidden="true"><span>12 px</span><span>22 px</span></div>
               </div>
-            </div>
+            </n-popover>
             <span class="json-action-divider" aria-hidden="true"></span>
-            <n-button
+            <n-tooltip
               v-if="isJsonFormattedMode"
-              size="tiny"
-              quaternary
-              :disabled="!isOutputJsonValid"
-              :title="isTreeCollapsed ? '全部展开' : '全部折叠'"
-              :aria-label="isTreeCollapsed ? '全部展开' : '全部折叠'"
-              @click="handleToggleExpandCollapse"
+              to="body"
+              placement="bottom"
+              :show-arrow="false"
             >
-              <template #icon>
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <template v-if="isTreeCollapsed">
-                    <polyline points="7 9 12 4 17 9"></polyline>
-                    <polyline points="7 15 12 20 17 15"></polyline>
+              <template #trigger>
+                <n-button
+                  size="tiny"
+                  quaternary
+                  :disabled="!isOutputJsonValid"
+                  :aria-label="isTreeCollapsed ? '全部展开' : '全部折叠'"
+                  @click="handleToggleExpandCollapse"
+                >
+                  <template #icon>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <template v-if="isTreeCollapsed">
+                        <polyline points="7 9 12 4 17 9"></polyline>
+                        <polyline points="7 15 12 20 17 15"></polyline>
+                      </template>
+                      <template v-else>
+                        <polyline points="7 4 12 9 17 4"></polyline>
+                        <polyline points="7 20 12 15 17 20"></polyline>
+                      </template>
+                    </svg>
                   </template>
-                  <template v-else>
-                    <polyline points="7 4 12 9 17 4"></polyline>
-                    <polyline points="7 20 12 15 17 20"></polyline>
+                </n-button>
+              </template>
+              {{ isTreeCollapsed ? '全部展开' : '全部折叠' }}
+            </n-tooltip>
+            <n-tooltip to="body" placement="bottom" :show-arrow="false">
+              <template #trigger>
+                <n-button
+                  size="tiny"
+                  :type="showOutputLineNumbers ? 'primary' : 'default'"
+                  :secondary="showOutputLineNumbers"
+                  :quaternary="!showOutputLineNumbers"
+                  :aria-label="showOutputLineNumbers ? '关闭输出行号' : '开启输出行号'"
+                  :aria-pressed="showOutputLineNumbers"
+                  @click="showOutputLineNumbers = !showOutputLineNumbers"
+                >
+                  <template #icon>
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M10 6h11M10 12h11M10 18h11M3 4h1v4M3 8h2M2.5 11.5a1.5 1.5 0 0 1 3 0c0 1-3 2-3 3h3M2.5 17h3l-2 2h.5a1.5 1.5 0 0 1 0 3H2.5"></path>
+                    </svg>
                   </template>
-                </svg>
+                </n-button>
               </template>
-            </n-button>
-            <n-button
-              size="tiny"
-              type="primary"
-              secondary
-              title="复制结果"
-              aria-label="复制结果"
-              @click="copyContent(jsonOutput, '转换结果')"
-            >
-              <template #icon>
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
+              {{ showOutputLineNumbers ? '关闭行号' : '开启行号' }}
+            </n-tooltip>
+            <n-tooltip to="body" placement="bottom" :show-arrow="false">
+              <template #trigger>
+                <n-button
+                  size="tiny"
+                  type="primary"
+                  secondary
+                  aria-label="复制结果"
+                  @click="copyContent(jsonOutput, '转换结果')"
+                >
+                  <template #icon>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                  </template>
+                </n-button>
               </template>
-            </n-button>
+              复制结果
+            </n-tooltip>
           </div>
         </div>
 
@@ -229,6 +291,7 @@
             ref="jsonViewerRef"
             :json="jsonOutput"
             :initial-font-size="viewerFontSize"
+            :show-line-numbers="showOutputLineNumbers"
             @collapse-change="(collapsed: boolean) => (isTreeCollapsed = collapsed)"
           />
 
@@ -240,6 +303,8 @@
             :theme="monacoTheme"
             :font-size="viewerFontSize"
             :read-only="true"
+            :line-numbers="showOutputLineNumbers"
+            compact-gutter
           />
         </div>
 
@@ -284,6 +349,8 @@ const jsonInput = ref('')
 const jsonOutput = ref('')
 const currentMode = ref<ConversionMode>('format4')
 const viewerFontSize = ref(DEFAULT_FONT_SIZE)
+const showFontSizePopover = ref(false)
+const showOutputLineNumbers = ref(false)
 const isTreeCollapsed = ref(false)
 const validationStatus = ref<'valid' | 'invalid' | 'empty'>('empty')
 const errorMessage = ref('')
@@ -450,17 +517,6 @@ function handleToggleExpandCollapse(): void {
   }
 }
 
-function handleIncreaseFontSize(): void {
-  if (viewerFontSize.value < MAX_FONT_SIZE) {
-    viewerFontSize.value += 1
-  }
-}
-
-function handleDecreaseFontSize(): void {
-  if (viewerFontSize.value > MIN_FONT_SIZE) {
-    viewerFontSize.value -= 1
-  }
-}
 </script>
 
 <style scoped>
@@ -477,78 +533,130 @@ function handleDecreaseFontSize(): void {
   background: var(--card-sub-bg);
 }
 
-.json-result-actions,
-.json-font-control {
+.json-result-actions {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-}
-
-.json-result-actions {
   margin-left: auto;
 }
 
-.json-font-label {
-  color: var(--text-secondary);
-  font-size: 11px;
-}
-
-.json-font-stepper {
-  display: flex;
-  align-items: center;
-  padding: 2px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--card-bg);
-}
-
-.json-font-button,
-.json-font-value {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 24px;
-  border-radius: 5px;
-  color: var(--text-secondary);
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-
-.json-font-button {
-  width: 26px;
-}
-
-.json-font-value {
-  min-width: 48px;
-  gap: 3px;
-  padding: 0 4px;
+.json-font-panel {
   color: var(--text-primary);
-  font-size: 12px;
+}
+
+.json-font-heading {
+  position: relative;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.json-font-current {
+  color: #10b981;
+  font-size: 22px;
+  line-height: 28px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
-.json-font-unit {
-  color: var(--text-muted);
-  font-size: 10px;
+.json-font-current span {
+  margin-left: 4px;
+  font-size: 13px;
   font-weight: 400;
 }
 
-.json-font-button:hover:not(:disabled),
-.json-font-value:hover {
+.json-font-caption {
+  margin-top: 2px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.json-font-reset {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.json-font-range {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.json-font-slider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 32px;
+}
+
+.json-font-slider input {
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  border-radius: 999px;
+  background: linear-gradient(to right, #10b981 var(--font-progress), var(--border-color) var(--font-progress));
+  cursor: pointer;
+}
+
+.json-font-slider input::-webkit-slider-thumb {
+  position: relative;
+  z-index: 1;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  cursor: grab;
+}
+
+.json-font-slider input:active::-webkit-slider-thumb {
+  cursor: grabbing;
+}
+
+.json-font-slider input:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 4px;
+}
+
+.json-font-stops {
+  position: absolute;
+  inset: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.json-font-stops i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.6;
+}
+
+.json-font-reset:hover {
   color: var(--text-primary);
   background: var(--hover-bg);
 }
 
-.json-font-button:focus-visible,
-.json-font-value:focus-visible {
+.json-font-reset:focus-visible {
   outline: 2px solid #10b981;
   outline-offset: 1px;
-}
-
-.json-font-button:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
 }
 
 .json-action-divider {

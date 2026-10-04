@@ -3,7 +3,7 @@
     <!-- 1. 对象类型 -->
     <template v-if="isObject">
       <!-- 空对象 -->
-      <div v-if="keys.length === 0" class="json-line">
+      <div v-if="keys.length === 0" class="json-line" :data-line-number="lineNumbers?.start">
         <span v-if="keyName" class="json-key">"{{ keyName }}"</span>
         <span v-if="keyName" class="json-colon">: </span>
         <span class="json-bracket">{}</span>
@@ -13,7 +13,7 @@
       <!-- 非空对象 -->
       <div v-else>
         <!-- 对象起始行 -->
-        <div class="json-line flex items-center flex-wrap">
+        <div class="json-line flex items-center flex-wrap" :data-line-number="lineNumbers?.start">
           <span v-if="keyName" class="json-key">"{{ keyName }}"</span>
           <span v-if="keyName" class="json-colon">: </span>
 
@@ -49,7 +49,7 @@
         <!-- 展开时的子属性列表 -->
         <div
           v-if="!isCollapsed"
-          class="json-children border-l border-zinc-200 dark:border-zinc-800 ml-2.5 pl-3.5 my-0.5 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
+          class="json-children border-l border-zinc-200 dark:border-zinc-800 my-0.5 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
         >
           <JsonNode
             v-for="(k, idx) in keys"
@@ -58,12 +58,12 @@
             :key-name="k"
             :is-last="idx === keys.length - 1"
             :depth="depth + 1"
-            :path="`${path}.${k}`"
+            :path="`${path}[${JSON.stringify(k)}]`"
           />
         </div>
 
         <!-- 对象闭合行 -->
-        <div v-if="!isCollapsed" class="json-line">
+        <div v-if="!isCollapsed" class="json-line" :data-line-number="lineNumbers?.end">
           <span class="json-bracket">}</span>
           <span v-if="!isLast" class="json-comma">,</span>
         </div>
@@ -73,7 +73,7 @@
     <!-- 2. 数组类型 -->
     <template v-else-if="isArray">
       <!-- 空数组 -->
-      <div v-if="val.length === 0" class="json-line">
+      <div v-if="val.length === 0" class="json-line" :data-line-number="lineNumbers?.start">
         <span v-if="keyName" class="json-key">"{{ keyName }}"</span>
         <span v-if="keyName" class="json-colon">: </span>
         <span class="json-bracket">[]</span>
@@ -83,7 +83,7 @@
       <!-- 非空数组 -->
       <div v-else>
         <!-- 数组起始行 -->
-        <div class="json-line flex items-center flex-wrap">
+        <div class="json-line flex items-center flex-wrap" :data-line-number="lineNumbers?.start">
           <span v-if="keyName" class="json-key">"{{ keyName }}"</span>
           <span v-if="keyName" class="json-colon">: </span>
 
@@ -119,7 +119,7 @@
         <!-- 展开时的元素列表 -->
         <div
           v-if="!isCollapsed"
-          class="json-children border-l border-zinc-200 dark:border-zinc-800 ml-2.5 pl-3.5 my-0.5 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
+          class="json-children border-l border-zinc-200 dark:border-zinc-800 my-0.5 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors"
         >
           <JsonNode
             v-for="(item, idx) in val"
@@ -133,7 +133,7 @@
         </div>
 
         <!-- 数组闭合行 -->
-        <div v-if="!isCollapsed" class="json-line">
+        <div v-if="!isCollapsed" class="json-line" :data-line-number="lineNumbers?.end">
           <span class="json-bracket">]</span>
           <span v-if="!isLast" class="json-comma">,</span>
         </div>
@@ -141,7 +141,7 @@
     </template>
 
     <!-- 3. 基本类型 (字符串 / 数字 / 布尔 / null) -->
-    <div v-else class="json-line">
+    <div v-else class="json-line" :data-line-number="lineNumbers?.start">
       <span v-if="keyName" class="json-key">"{{ keyName }}"</span>
       <span v-if="keyName" class="json-colon">: </span>
 
@@ -176,6 +176,8 @@ const props = defineProps<{
 const collapsedSet = inject<Ref<Set<string>>>('jsonViewerCollapsedSet')
 const fontSize = inject<Ref<number>>('jsonViewerFontSize')
 const toggleCollapseGlobal = inject<(path: string) => void>('jsonViewerToggleCollapse')
+const lineNumberMap = inject<Ref<Map<string, { start: number; end: number }>>>('jsonViewerLineNumbers')
+const lineNumbers = computed(() => lineNumberMap?.value.get(props.path))
 
 const isArray = computed(() => Array.isArray(props.val))
 const isObject = computed(() => {
@@ -195,7 +197,8 @@ const nodeStyle = computed(() => {
   const size = fontSize?.value || 15
   return {
     fontSize: `${size}px`,
-    lineHeight: `${Math.round(size * 1.65)}px`
+    lineHeight: `${Math.round(size * 1.65)}px`,
+    '--json-depth': props.depth
   }
 })
 
@@ -206,9 +209,15 @@ function toggleCollapse(): void {
 
 <style scoped>
 .json-line {
+  position: relative;
   white-space: pre-wrap;
   word-break: break-all;
   padding: 1px 0;
+}
+
+.json-children {
+  margin-left: 10px;
+  padding-left: calc(var(--json-indent) - 11px);
 }
 
 /* 键名颜色：紫红色 (JSON.cn 经典高亮色) */
