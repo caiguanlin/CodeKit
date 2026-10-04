@@ -1,5 +1,8 @@
 <template>
-  <div ref="containerRef" class="w-full h-full relative overflow-hidden rounded-md border border-[var(--border-color)] transition-colors"></div>
+  <div
+    ref="containerRef"
+    class="w-full h-full relative overflow-hidden rounded-md border border-[var(--border-color)] transition-colors"
+  ></div>
 </template>
 
 <script setup lang="ts">
@@ -59,6 +62,7 @@ const props = withDefaults(
     tabSize?: number
     lineNumbers?: boolean
     compactGutter?: boolean
+    renderLineHighlight?: 'none' | 'gutter' | 'line' | 'all'
   }>(),
   {
     modelValue: '',
@@ -70,7 +74,8 @@ const props = withDefaults(
     fontSize: 14,
     tabSize: 4,
     lineNumbers: true,
-    compactGutter: false
+    compactGutter: false,
+    renderLineHighlight: 'all'
   }
 )
 
@@ -113,7 +118,7 @@ onMounted(() => {
     showFoldingControls: 'always',
     foldingHighlight: true,
     scrollBeyondLastLine: false,
-    renderLineHighlight: 'all',
+    renderLineHighlight: props.renderLineHighlight,
     tabSize: props.tabSize,
     renderWhitespace: 'selection'
   })
@@ -162,6 +167,11 @@ watch(
 watch(
   () => [props.lineNumbers, props.compactGutter],
   () => editorInstance?.updateOptions(gutterOptions())
+)
+
+watch(
+  () => props.renderLineHighlight,
+  (renderLineHighlight) => editorInstance?.updateOptions({ renderLineHighlight })
 )
 
 watch(

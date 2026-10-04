@@ -96,6 +96,7 @@
             :theme="monacoTheme"
             :font-size="DEFAULT_FONT_SIZE"
             :line-numbers="false"
+            :render-line-highlight="jsonInput.trim() ? 'all' : 'none'"
             compact-gutter
           />
         </div>
@@ -148,7 +149,7 @@
             <n-popover
               v-model:show="showFontSizePopover"
               trigger="click"
-              placement="bottom-end"
+              placement="bottom"
               to="body"
               :show-arrow="false"
               :width="264"
@@ -165,7 +166,7 @@
                     <n-button
                       size="tiny"
                       quaternary
-                      :aria-label="`调整结果字号，当前 ${viewerFontSize}px`"
+                      :aria-label="`调整字号，当前 ${viewerFontSize}px`"
                       :aria-expanded="showFontSizePopover"
                       aria-controls="json-font-size-panel"
                     >
@@ -182,18 +183,6 @@
               <div id="json-font-size-panel" class="json-font-panel" @keydown.esc="showFontSizePopover = false">
                 <div class="json-font-heading">
                   <div class="json-font-current" aria-live="polite">{{ viewerFontSize }}<span>px</span></div>
-                  <div class="json-font-caption">结果字号</div>
-                  <button
-                    type="button"
-                    class="json-font-reset"
-                    :title="`恢复默认字号（${DEFAULT_FONT_SIZE}px）`"
-                    :aria-label="`恢复默认字号 ${DEFAULT_FONT_SIZE}px`"
-                    @click="viewerFontSize = DEFAULT_FONT_SIZE"
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M3 10a9 9 0 1 1 2.6 8.4M3 4v6h6"></path>
-                    </svg>
-                  </button>
                 </div>
                 <div class="json-font-slider">
                   <input
@@ -203,7 +192,7 @@
                     :max="MAX_FONT_SIZE"
                     step="1"
                     :style="{ '--font-progress': `${((viewerFontSize - MIN_FONT_SIZE) / (MAX_FONT_SIZE - MIN_FONT_SIZE)) * 100}%` }"
-                    aria-label="结果字号"
+                    aria-label="字号"
                     :aria-valuetext="`${viewerFontSize} 像素`"
                   />
                   <div class="json-font-stops" aria-hidden="true"><i v-for="stop in 6" :key="stop"></i></div>
@@ -266,7 +255,6 @@
               <template #trigger>
                 <n-button
                   size="tiny"
-                  type="primary"
                   secondary
                   aria-label="复制结果"
                   @click="copyContent(jsonOutput, '转换结果')"
@@ -546,7 +534,6 @@ function handleToggleExpandCollapse(): void {
 }
 
 .json-font-heading {
-  position: relative;
   margin-bottom: 16px;
   text-align: center;
 }
@@ -563,26 +550,6 @@ function handleToggleExpandCollapse(): void {
   margin-left: 4px;
   font-size: 13px;
   font-weight: 400;
-}
-
-.json-font-caption {
-  margin-top: 2px;
-  color: var(--text-secondary);
-  font-size: 12px;
-}
-
-.json-font-reset {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  color: var(--text-secondary);
-  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .json-font-range {
@@ -649,19 +616,10 @@ function handleToggleExpandCollapse(): void {
   opacity: 0.6;
 }
 
-.json-font-reset:hover {
-  color: var(--text-primary);
-  background: var(--hover-bg);
-}
-
-.json-font-reset:focus-visible {
-  outline: 2px solid #10b981;
-  outline-offset: 1px;
-}
-
 .json-action-divider {
   width: 1px;
   height: 16px;
   background: var(--border-color);
 }
+
 </style>
