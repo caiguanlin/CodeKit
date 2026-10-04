@@ -5,7 +5,6 @@
       <n-tabs v-model:value="activeTab" type="segment" size="small">
         <n-tab name="diff">双栏 Diff 差异对比</n-tab>
         <n-tab name="regex">正则表达式测试</n-tab>
-        <n-tab name="naming">命名格式转换</n-tab>
         <n-tab name="stats">文本统计分析</n-tab>
       </n-tabs>
     </div>
@@ -123,69 +122,7 @@
         </div>
       </div>
 
-      <!-- 模块 3: 命名规范转换 -->
-      <div v-else-if="activeTab === 'naming'" class="space-y-4 overflow-y-auto">
-        <div class="space-y-1">
-          <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">输入源文本 (支持多种格式)</div>
-          <n-input
-            v-model:value="namingInput"
-            placeholder="例如: hello_world, getUserProfile, user-login-record..."
-            @update:value="convertNaming"
-          />
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
-            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-              <span>camelCase (小驼峰):</span>
-              <n-button size="tiny" secondary @click="copy(namingResults.camel)">复制</n-button>
-            </div>
-            <div class="font-mono font-bold text-emerald-600 dark:text-emerald-400 select-all">{{ namingResults.camel || '-' }}</div>
-          </div>
-
-          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
-            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-              <span>PascalCase (大驼峰):</span>
-              <n-button size="tiny" secondary @click="copy(namingResults.pascal)">复制</n-button>
-            </div>
-            <div class="font-mono font-bold text-blue-600 dark:text-blue-400 select-all">{{ namingResults.pascal || '-' }}</div>
-          </div>
-
-          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
-            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-              <span>snake_case (下划线):</span>
-              <n-button size="tiny" secondary @click="copy(namingResults.snake)">复制</n-button>
-            </div>
-            <div class="font-mono font-bold text-amber-600 dark:text-amber-400 select-all">{{ namingResults.snake || '-' }}</div>
-          </div>
-
-          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
-            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-              <span>kebab-case (中划线):</span>
-              <n-button size="tiny" secondary @click="copy(namingResults.kebab)">复制</n-button>
-            </div>
-            <div class="font-mono font-bold text-purple-600 dark:text-purple-400 select-all">{{ namingResults.kebab || '-' }}</div>
-          </div>
-
-          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
-            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-              <span>CONSTANT_CASE (全大写常量):</span>
-              <n-button size="tiny" secondary @click="copy(namingResults.constant)">复制</n-button>
-            </div>
-            <div class="font-mono font-bold text-red-600 dark:text-red-400 select-all">{{ namingResults.constant || '-' }}</div>
-          </div>
-
-          <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-1 transition-colors">
-            <div class="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
-              <span>UPPERCASE (全大写):</span>
-              <n-button size="tiny" secondary @click="copy(namingResults.upper)">复制</n-button>
-            </div>
-            <div class="font-mono font-bold text-zinc-800 dark:text-zinc-200 select-all">{{ namingResults.upper || '-' }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 模块 4: 文本统计分析 -->
+      <!-- 模块 3: 文本统计分析 -->
       <div v-else-if="activeTab === 'stats'" class="h-full flex flex-col space-y-3">
         <div class="flex-1 min-h-0">
           <n-input
@@ -224,12 +161,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useMessage } from 'naive-ui'
+import { ref, computed, onMounted } from 'vue'
 import MonacoDiffEditor from '@/components/MonacoDiffEditor.vue'
 import { useSettingsStore } from '@/stores/settings'
 
-const message = useMessage()
 const settingsStore = useSettingsStore()
 const activeTab = ref('diff')
 
@@ -343,60 +278,7 @@ function testRegex(): void {
   }
 }
 
-// 3. 命名转换
-const namingInput = ref('user_account_info')
-const namingResults = reactive({
-  camel: '',
-  pascal: '',
-  snake: '',
-  kebab: '',
-  constant: '',
-  upper: ''
-})
-
-function convertNaming(): void {
-  const str = namingInput.value.trim()
-  if (!str) {
-    namingResults.camel = ''
-    namingResults.pascal = ''
-    namingResults.snake = ''
-    namingResults.kebab = ''
-    namingResults.constant = ''
-    namingResults.upper = ''
-    return
-  }
-
-  // 分词逻辑 (支持驼峰、下划线、破折号、空格)
-  const words = str
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/[_-]+/g, ' ')
-    .trim()
-    .split(/\s+/)
-
-  const lowerWords = words.map((w) => w.toLowerCase())
-
-  // camelCase
-  namingResults.camel = lowerWords
-    .map((w, i) => (i === 0 ? w : w.charAt(0).toUpperCase() + w.slice(1)))
-    .join('')
-
-  // PascalCase
-  namingResults.pascal = lowerWords.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join('')
-
-  // snake_case
-  namingResults.snake = lowerWords.join('_')
-
-  // kebab-case
-  namingResults.kebab = lowerWords.join('-')
-
-  // CONSTANT_CASE
-  namingResults.constant = lowerWords.join('_').toUpperCase()
-
-  // UPPERCASE
-  namingResults.upper = str.toUpperCase()
-}
-
-// 4. 文本统计
+// 3. 文本统计
 const statsInput = ref(`CodeKit (代码工具盒) 是专为开发者打造的桌面级效率工具箱。\n致力于提供本地优先、安全隔离的极致开发辅助体验！`)
 
 const statsTotalChars = computed(() => statsInput.value.length)
@@ -411,16 +293,5 @@ const statsByteSize = computed(() => new Blob([statsInput.value]).size)
 
 onMounted(() => {
   testRegex()
-  convertNaming()
 })
-
-async function copy(text: string): Promise<void> {
-  if (!text) return
-  if (window.electronAPI) {
-    await window.electronAPI.writeClipboard(text)
-  } else {
-    navigator.clipboard.writeText(text)
-  }
-  message.success('已复制到剪贴板')
-}
 </script>

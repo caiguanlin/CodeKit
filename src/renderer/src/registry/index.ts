@@ -92,13 +92,25 @@ export const TOOLS: ToolMetadata[] = [
     id: 'text',
     name: '文本处理与对比',
     shortName: '文本与Diff',
-    description: 'Monaco 双栏文本差异对比、正则表达式测试器、命名转驼峰/下划线',
+    description: 'Monaco 双栏文本差异对比、正则表达式测试器、文本多维统计',
     category: 'text',
     icon: 'DocumentTextOutline',
     accentColor: '#ec4899',
-    keywords: ['diff', 'compare', 'regex', 'zhengze', 'case', 'camelcase', 'words', 'duibi'],
+    keywords: ['diff', 'compare', 'regex', 'zhengze', 'words', 'duibi'],
     route: '/tools/text',
     component: () => import('@/tools/text/index.vue')
+  },
+  {
+    id: 'naming',
+    name: '命名格式转换',
+    shortName: '命名转换',
+    description: '批量转换驼峰、下划线、中划线及大写命名，支持逐条复制与全部复制',
+    category: 'text',
+    icon: 'TextOutline',
+    accentColor: '#6366f1',
+    keywords: ['naming', 'case', 'camelcase', 'pascalcase', 'snake', 'kebab', 'constant', 'uppercase', 'mingming', '驼峰', '下划线', '中划线', '大写'],
+    route: '/tools/naming',
+    component: () => import('@/tools/naming/index.vue')
   },
   {
     id: 'cron',
