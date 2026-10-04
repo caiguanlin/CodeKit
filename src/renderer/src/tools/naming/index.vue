@@ -124,10 +124,10 @@ function convertNaming(input: string): Record<NamingFormat, string> {
 
 async function copyAll(format: NamingFormat): Promise<void> {
   if (!namingResults.value.some((result) => result[format])) return
-  await copy(namingResults.value.map((result) => result[format]).join('\n'), '该格式全部结果')
+  await copy(namingResults.value.map((result) => result[format]).join('\n'))
 }
 
-async function copy(text: string, label = '字符串'): Promise<void> {
+async function copy(text: string): Promise<void> {
   if (!text) return
   try {
     if (window.electronAPI) {
@@ -137,7 +137,7 @@ async function copy(text: string, label = '字符串'): Promise<void> {
       await navigator.clipboard.writeText(text)
     }
     copyMessage?.destroy()
-    copyMessage = message.success(`已复制${label}到剪贴板`)
+    copyMessage = message.success('已复制')
   } catch (error: unknown) {
     copyMessage?.destroy()
     copyMessage = message.error(`复制失败: ${error instanceof Error ? error.message : String(error)}`)

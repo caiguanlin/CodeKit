@@ -23,7 +23,7 @@ export const TOOL_CATEGORIES: CategoryItem[] = [
     key: 'generator',
     name: '研发生成器',
     icon: 'ConstructOutline',
-    description: 'UUID、强密码、NanoID 批量生成'
+    description: 'UUID、雪花 ID、密码批量生成'
   },
   {
     key: 'text',
@@ -80,11 +80,11 @@ export const TOOLS: ToolMetadata[] = [
     id: 'generator',
     name: '万能生成器',
     shortName: '生成器',
-    description: '批量 UUID v4/v7、高强度密码、NanoID、随机哈希生成',
+    description: '批量生成 UUID v4/v7、雪花 ID 和高强度密码',
     category: 'generator',
     icon: 'ConstructOutline',
     accentColor: '#f59e0b',
-    keywords: ['uuid', 'guid', 'password', 'nanoid', 'generator', 'shengchengqi', 'random', 'mima'],
+    keywords: ['id', 'uuid', 'guid', 'snowflake', '雪花', 'xuehua', 'password', 'generator', 'shengchengqi', 'random', 'mima'],
     route: '/tools/generator',
     component: () => import('@/tools/generator/index.vue')
   },

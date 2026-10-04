@@ -403,6 +403,6 @@ async function copy(text: string): Promise<void> {
   } else {
     navigator.clipboard.writeText(text)
   }
-  message.success('已复制到剪贴板')
+  message.success('已复制')
 }
 </script>

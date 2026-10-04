@@ -1,18 +1,40 @@
 <template>
-  <div class="h-full flex flex-col space-y-3">
-    <!-- 顶部标签切换 -->
-    <div class="px-3 py-2 rounded-lg bg-[var(--card-bg)] border border-[var(--border-color)] transition-colors">
-      <n-tabs v-model:value="activeTab" type="segment" size="small">
-        <n-tab name="uuid">UUID / GUID</n-tab>
-        <n-tab name="password">强密码 / 密钥</n-tab>
-        <n-tab name="nanoid">NanoID 生成器</n-tab>
-      </n-tabs>
+  <div class="h-full flex flex-col space-y-3 min-h-0">
+    <!-- 生成类型切换 -->
+    <div
+      class="px-3.5 py-2 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] flex items-center justify-between gap-3 flex-wrap shrink-0 shadow-sm transition-colors"
+    >
+      <div class="flex items-center space-x-1.5 flex-wrap gap-y-1" role="group" aria-label="生成类型">
+        <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-200 mr-1 shrink-0">生成类型:</span>
+        <n-button
+          size="tiny"
+          :type="activeTab === 'id' ? 'primary' : 'default'"
+          :secondary="activeTab !== 'id'"
+          :aria-pressed="activeTab === 'id'"
+          @click="activeTab = 'id'"
+        >
+          ID
+        </n-button>
+        <n-button
+          size="tiny"
+          :type="activeTab === 'password' ? 'primary' : 'default'"
+          :secondary="activeTab !== 'password'"
+          :aria-pressed="activeTab === 'password'"
+          @click="activeTab = 'password'"
+        >
+          密码
+        </n-button>
+      </div>
     </div>
 
     <!-- 主工作区 -->
     <div class="flex-1 flex flex-col min-h-0 bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl p-4 overflow-y-auto transition-colors">
+      <n-tabs v-if="activeTab === 'id'" v-model:value="idTab" type="line" size="small" class="mb-4">
+        <n-tab name="uuid">UUID</n-tab>
+        <n-tab name="snowflake">雪花</n-tab>
+      </n-tabs>
       <!-- 模块 1: UUID 生成器 -->
-      <div v-if="activeTab === 'uuid'" class="space-y-4">
+      <div v-if="activeTab === 'id' && idTab === 'uuid'" class="space-y-4">
         <!-- 控制面板 -->
         <div class="p-3 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] flex items-center justify-between flex-wrap gap-3 transition-colors">
           <div class="flex items-center space-x-4 flex-wrap">
@@ -50,17 +72,7 @@
           </div>
         </div>
 
-        <!-- 结果列表 -->
-        <div class="space-y-1.5">
-          <div
-            v-for="(item, idx) in uuidList"
-            :key="idx"
-            class="flex items-center justify-between px-3 py-2 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] font-mono text-xs hover:border-emerald-500/40 transition-colors"
-          >
-            <span class="text-zinc-800 dark:text-zinc-200 select-all">{{ item }}</span>
-            <n-button size="tiny" secondary @click="copy(item)">复制</n-button>
-          </div>
-        </div>
+        <ResultGrid :items="uuidList" wide @copy="copy" />
       </div>
 
       <!-- 模块 2: 强密码 / 密钥 -->
@@ -109,63 +121,41 @@
           </div>
         </div>
 
-        <!-- 结果列表 -->
-        <div class="space-y-1.5">
-          <div
-            v-for="(item, idx) in passwordList"
-            :key="idx"
-            class="flex items-center justify-between px-3 py-2 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] font-mono text-xs hover:border-blue-500/40 transition-colors"
-          >
-            <span class="text-zinc-800 dark:text-zinc-200 select-all">{{ item }}</span>
-            <n-button size="tiny" secondary @click="copy(item)">复制</n-button>
-          </div>
-        </div>
+        <ResultGrid :items="passwordList" @copy="copy" />
       </div>
 
-      <!-- 模块 3: NanoID 生成器 -->
-      <div v-else-if="activeTab === 'nanoid'" class="space-y-4">
+      <!-- 雪花 ID 生成器 -->
+      <div v-else-if="activeTab === 'id' && idTab === 'snowflake'" class="space-y-4">
         <div class="p-4 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] space-y-4 transition-colors">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="space-y-2">
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-zinc-500 dark:text-zinc-400">NanoID 长度:</span>
-                <span class="font-bold text-amber-600 dark:text-amber-400 font-mono">{{ nanoidLength }} 位</span>
-              </div>
-              <n-slider v-model:value="nanoidLength" :min="6" :max="48" :step="1" />
+          <div class="flex items-center flex-wrap gap-4 text-xs">
+            <div class="flex items-center space-x-2">
+              <span class="text-zinc-500 dark:text-zinc-400">数据中心 ID:</span>
+              <n-input-number v-model:value="datacenterId" size="small" :min="0" :max="31" :precision="0" :show-button="true" :clearable="false" class="w-24" />
             </div>
-
-            <div class="space-y-2">
-              <div class="flex items-center justify-between text-xs">
-                <span class="text-zinc-500 dark:text-zinc-400">生成数量:</span>
-                <span class="font-bold text-emerald-600 dark:text-emerald-400 font-mono">{{ nanoidCount }} 个</span>
-              </div>
-              <n-slider v-model:value="nanoidCount" :min="1" :max="30" :step="1" />
+            <div class="flex items-center space-x-2">
+              <span class="text-zinc-500 dark:text-zinc-400">机器 ID:</span>
+              <n-input-number v-model:value="workerId" size="small" :min="0" :max="31" :precision="0" :clearable="false" class="w-24" />
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-zinc-500 dark:text-zinc-400">生成数量:</span>
+              <n-input-number v-model:value="snowflakeCount" size="small" :min="1" :max="50" :precision="0" :clearable="false" class="w-24" />
             </div>
           </div>
 
           <div class="flex items-center justify-between pt-2 border-t border-[var(--border-sub-color)]">
-            <span class="text-xs text-zinc-500">超轻量、无序、高碰撞抗性唯一标识符</span>
+            <span class="text-xs text-zinc-500 dark:text-zinc-400">按时间递增的 64 位整数 ID，以文本形式复制，避免精度丢失</span>
             <div class="flex items-center space-x-2">
-              <n-button size="small" type="primary" secondary @click="generateNanoIds">
-                生成 NanoID
+              <n-button size="small" type="primary" secondary @click="generateSnowflakes">
+                生成雪花 ID
               </n-button>
-              <n-button size="small" secondary @click="copy(nanoidList.join('\n'))">
+              <n-button size="small" secondary @click="copy(snowflakeList.join('\n'))">
                 复制全部
               </n-button>
             </div>
           </div>
         </div>
 
-        <div class="space-y-1.5">
-          <div
-            v-for="(item, idx) in nanoidList"
-            :key="idx"
-            class="flex items-center justify-between px-3 py-2 rounded-lg bg-[var(--card-sub-bg)] border border-[var(--border-sub-color)] font-mono text-xs hover:border-amber-500/40 transition-colors"
-          >
-            <span class="text-zinc-800 dark:text-zinc-200 select-all">{{ item }}</span>
-            <n-button size="tiny" secondary @click="copy(item)">复制</n-button>
-          </div>
-        </div>
+        <ResultGrid :items="snowflakeList" @copy="copy" />
       </div>
     </div>
   </div>
@@ -175,10 +165,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { useMessage } from 'naive-ui'
 import { v4 as uuidv4, v7 as uuidv7 } from 'uuid'
-import { nanoid } from 'nanoid'
+import { nextSnowflakeId } from './snowflake'
+import ResultGrid from './ResultGrid.vue'
 
 const message = useMessage()
-const activeTab = ref('uuid')
+const activeTab = ref('id')
+const idTab = ref('uuid')
 
 // UUID
 const uuidVersion = ref<'v4' | 'v7'>('v4')
@@ -264,32 +256,44 @@ function generatePasswords(): void {
   passwordList.value = result
 }
 
-// NanoID
-const nanoidLength = ref(21)
-const nanoidCount = ref(5)
-const nanoidList = ref<string[]>([])
+// Snowflake
+const datacenterId = ref(1)
+const workerId = ref(1)
+const snowflakeCount = ref(5)
+const snowflakeList = ref<string[]>([])
 
-function generateNanoIds(): void {
-  const result: string[] = []
-  for (let i = 0; i < nanoidCount.value; i++) {
-    result.push(nanoid(nanoidLength.value))
+function generateSnowflakes(): void {
+  try {
+    if (!Number.isInteger(snowflakeCount.value) || snowflakeCount.value < 1 || snowflakeCount.value > 50) {
+      throw new Error('生成数量须为 1–50 的整数')
+    }
+    const result: string[] = []
+    for (let i = 0; i < snowflakeCount.value; i++) {
+      result.push(nextSnowflakeId(datacenterId.value, workerId.value))
+    }
+    snowflakeList.value = result
+  } catch (error) {
+    message.error(error instanceof Error ? error.message : '雪花 ID 生成失败')
   }
-  nanoidList.value = result
 }
 
 onMounted(() => {
   generateUuids()
   generatePasswords()
-  generateNanoIds()
+  generateSnowflakes()
 })
 
 async function copy(text: string): Promise<void> {
   if (!text) return
-  if (window.electronAPI) {
-    await window.electronAPI.writeClipboard(text)
-  } else {
-    navigator.clipboard.writeText(text)
+  try {
+    if (window.electronAPI) {
+      await window.electronAPI.writeClipboard(text)
+    } else {
+      await navigator.clipboard.writeText(text)
+    }
+    message.success('已复制')
+  } catch {
+    message.error('复制失败，请重试')
   }
-  message.success('已复制到剪贴板')
 }
 </script>

@@ -58,7 +58,7 @@
               secondary
               title="复制"
               aria-label="复制"
-              @click="copyContent(jsonInput, '输入内容')"
+              @click="copyContent(jsonInput)"
             >
               <template #icon>
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -258,7 +258,7 @@
                   size="tiny"
                   secondary
                   aria-label="复制结果"
-                  @click="copyContent(jsonOutput, '转换结果')"
+                  @click="copyContent(jsonOutput)"
                 >
                   <template #icon>
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -501,7 +501,7 @@ function downloadOutput(): void {
   }
 }
 
-async function copyContent(text: string, label = '内容'): Promise<void> {
+async function copyContent(text: string): Promise<void> {
   if (!text) {
     message.warning('没有可复制的内容')
     return
@@ -512,7 +512,7 @@ async function copyContent(text: string, label = '内容'): Promise<void> {
     } else {
       await navigator.clipboard.writeText(text)
     }
-    message.success(`已复制${label}到剪贴板`)
+    message.success('已复制')
   } catch (err: any) {
     message.error(`复制失败: ${err.message}`)
   }
