@@ -29,6 +29,7 @@
 | **时间戳转换器** | 毫秒级实时跳动时钟、10位/13位双向转换、UTC/ISO/本地时间多维解析、相对时间计算 | Day.js |
 | **编解码与哈希** | Base64 编码/解码、URL Component 编解码、Unicode 中文互转、Hex 转换、MD5/SHA-1/SHA-256/SHA-512 哈希 | CryptoJS |
 | **万能生成器** | ID（UUID v4 / v7、雪花 ID）批量生成、可调长度与符号集的高强度密码生成器 | UUID / Snowflake |
+| **二维码工具** | 文本/链接实时生成二维码，支持中文、emoji、微信扫码，导出黑白 PNG 图片；全部本地处理 | qrcode |
 | **文本处理与对比** | 双栏 Diff 文本差异对比，支持多种语言与单栏混排 | Monaco Diff Editor |
 | **正则表达式** | 独立正则测试页面、捕获组与常用预设、完整 JavaScript / TypeScript 代码一键复制 | 原生 RegExp |
 | **命名格式转换** | 自动识别空格、换行、中英文逗号或分号分隔的多个字符串，批量转换六种命名格式、点击结果逐条复制、图标按钮按格式全部复制 | 原生字符串处理 |
@@ -75,6 +76,9 @@ pnpm dev
 ```bash
 # 类型检查
 pnpm typecheck
+
+# 二维码生成、图片独立解码与异步状态测试
+pnpm test:qrcode
 
 # 生产环境打包编译
 pnpm build

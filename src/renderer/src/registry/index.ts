@@ -23,7 +23,7 @@ export const TOOL_CATEGORIES: CategoryItem[] = [
     key: 'generator',
     name: '研发生成器',
     icon: 'ConstructOutline',
-    description: 'UUID、雪花 ID、密码批量生成'
+    description: 'UUID、雪花 ID、密码批量生成与二维码生成'
   },
   {
     key: 'text',
@@ -81,6 +81,18 @@ export const TOOLS: ToolMetadata[] = [
     keywords: ['id', 'uuid', 'guid', 'snowflake', '雪花', 'xuehua', 'password', 'generator', 'shengchengqi', 'random', 'mima'],
     route: '/tools/generator',
     component: () => import('@/tools/generator/index.vue')
+  },
+  {
+    id: 'qrcode',
+    name: '二维码工具',
+    shortName: '二维码',
+    description: '文本与链接生成二维码，支持微信扫码与导出 PNG 图片',
+    category: 'generator',
+    icon: 'QrCodeOutline',
+    accentColor: '#06b6d4',
+    keywords: ['qrcode', 'qr', 'erweima', '二维码', '微信', '扫码', 'png'],
+    route: '/tools/qrcode',
+    component: () => import('@/tools/qrcode/index.vue')
   },
   {
     id: 'text',
