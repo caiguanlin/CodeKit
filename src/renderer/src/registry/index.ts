@@ -38,11 +38,11 @@ export const TOOLS: ToolMetadata[] = [
     id: 'json',
     name: 'JSON 工具盒',
     shortName: 'JSON',
-    description: 'JSON 格式化、压缩与语法校验',
+    description: 'JSON 格式化、压缩、JSON 字符串转 JSON 与语法校验，保留大整数精度',
     category: 'format',
     icon: 'CodeSlashOutline',
     accentColor: '#10b981',
-    keywords: ['json', 'format', 'minify', 'validate', 'geshihua', 'yasuo'],
+    keywords: ['json', 'format', 'minify', 'validate', 'unescape', 'geshihua', 'yasuo', '字符串', '转义', '还原', 'debug'],
     route: '/tools/json',
     component: () => import('@/tools/json/index.vue')
   },

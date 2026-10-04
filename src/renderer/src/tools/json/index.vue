@@ -24,11 +24,20 @@
         >
           压缩
         </n-button>
+        <n-button
+          size="tiny"
+          :type="currentMode === 'unescape' ? 'primary' : 'default'"
+          :secondary="currentMode !== 'unescape'"
+          title="将调试时复制的 JSON 字符串转换为 JSON，支持带或不带外层引号"
+          @click="switchMode('unescape')"
+        >
+          JSON 字符串转 JSON
+        </n-button>
       </div>
 
       <div class="shrink-0 ml-auto">
         <n-button
-          v-if="jsonOutput"
+          v-if="isOutputJsonValid"
           size="tiny"
           quaternary
           title="将转换结果应用覆盖到左侧输入框"
@@ -37,6 +46,10 @@
           覆盖到输入
         </n-button>
       </div>
+    </div>
+
+    <div v-if="currentMode === 'unescape'" class="px-1 text-xs text-zinc-500 dark:text-zinc-400 shrink-0">
+      粘贴调试时复制的 JSON 字符串（如 {\"name\":\"示例\"}），自动转换为 JSON 并格式化；支持外层引号及多层转义，保留大整数精度。
     </div>
 
     <!-- 主工作区：左侧输入 + 右侧输出（高度完全一致，两端严格对齐） -->
@@ -112,7 +125,7 @@
               class="flex items-center text-emerald-600 dark:text-emerald-400 font-medium"
             >
               <span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse shrink-0"></span>
-              JSON 格式有效
+              {{ currentMode === 'unescape' ? '已转换为有效 JSON' : 'JSON 格式有效' }}
             </span>
             <span
               v-else-if="validationStatus === 'invalid'"
@@ -344,8 +357,7 @@ import { useMessage } from 'naive-ui'
 import MonacoEditor from '@/components/MonacoEditor.vue'
 import JsonViewer from '@/components/JsonViewer/JsonViewer.vue'
 import { useSettingsStore } from '@/stores/settings'
-
-type ConversionMode = 'format4' | 'minify'
+import { convertJson, type ConversionMode } from './json'
 
 const DEFAULT_FONT_SIZE = 15
 const MIN_FONT_SIZE = 12
@@ -369,13 +381,14 @@ const jsonViewerRef = ref<InstanceType<typeof JsonViewer> | null>(null)
 
 const modeNames: Record<ConversionMode, string> = {
   format4: '格式化',
-  minify: '压缩'
+  minify: '压缩',
+  unescape: 'JSON 字符串转 JSON'
 }
 
 const currentModeTitle = computed(() => modeNames[currentMode.value])
 
 const isJsonFormattedMode = computed(() => {
-  return currentMode.value === 'format4'
+  return currentMode.value !== 'minify'
 })
 
 const isOutputJsonValid = computed(() => {
@@ -421,49 +434,23 @@ watch(viewerFontSize, (newSize) => {
   jsonViewerRef.value?.setFontSize(newSize)
 })
 
-function validateJson(): boolean {
+function updateOutput(): void {
   if (!jsonInput.value.trim()) {
     validationStatus.value = 'empty'
     errorMessage.value = ''
-    return false
-  }
-
-  try {
-    JSON.parse(jsonInput.value)
-    validationStatus.value = 'valid'
-    errorMessage.value = ''
-    return true
-  } catch (err: any) {
-    validationStatus.value = 'invalid'
-    errorMessage.value = err.message || 'JSON 语法错误'
-    return false
-  }
-}
-
-function updateOutput(): void {
-  const isValid = validateJson()
-  if (!jsonInput.value.trim()) {
     jsonOutput.value = ''
     return
   }
 
-  if (!isValid) {
-    jsonOutput.value = `// 等待左侧输入有效的 JSON 内容...\n// 错误信息: ${errorMessage.value}`
-    return
-  }
-
   try {
-    const parsed = JSON.parse(jsonInput.value)
-    switch (currentMode.value) {
-      case 'format4':
-        jsonOutput.value = JSON.stringify(parsed, null, 4)
-        break
-      case 'minify':
-        jsonOutput.value = JSON.stringify(parsed)
-        break
-    }
-  } catch (err: any) {
-    jsonOutput.value = `// 转换异常: ${err.message}`
+    jsonOutput.value = convertJson(jsonInput.value, currentMode.value)
+    validationStatus.value = 'valid'
+    errorMessage.value = ''
+  } catch (err: unknown) {
+    validationStatus.value = 'invalid'
+    const detail = err instanceof Error ? err.message : String(err)
+    errorMessage.value = currentMode.value === 'unescape' ? `JSON 字符串转换失败: ${detail}` : detail
+    jsonOutput.value = `// 转换失败，请检查左侧输入内容。\n// ${errorMessage.value.replace(/[\r\n]+/g, ' ')}`
   }
 }
 
@@ -519,8 +506,8 @@ async function copyContent(text: string): Promise<void> {
 }
 
 function applyOutputToInput(): void {
-  if (!jsonOutput.value) {
-    message.warning('输出内容为空，无法覆盖')
+  if (!isOutputJsonValid.value) {
+    message.warning('没有有效的 JSON 结果，无法覆盖')
     return
   }
   jsonInput.value = jsonOutput.value

@@ -23,6 +23,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, provide } from 'vue'
 import JsonNode from './JsonNode.vue'
+import { isLosslessNumber, parse } from 'lossless-json'
 
 const props = withDefaults(
   defineProps<{
@@ -60,7 +61,7 @@ const parsedData = computed(() => {
     return props.json
   }
   try {
-    return JSON.parse(props.json)
+    return parse(props.json)
   } catch {
     return undefined
   }
@@ -73,7 +74,7 @@ const lineLayout = computed(() => {
 
   function visit(value: any, path: string): void {
     const start = nextLine++
-    const entries = value !== null && typeof value === 'object' ? Object.entries(value) : []
+    const entries = value !== null && typeof value === 'object' && !isLosslessNumber(value) ? Object.entries(value) : []
     for (const [key, child] of entries) {
       visit(child, Array.isArray(value) ? `${path}[${key}]` : `${path}[${JSON.stringify(key)}]`)
     }
@@ -112,7 +113,7 @@ function collapseAll(): void {
     if (Array.isArray(val)) {
       newSet.add(path)
       val.forEach((item, idx) => collect(item, `${path}[${idx}]`))
-    } else if (val !== null && typeof val === 'object') {
+    } else if (val !== null && typeof val === 'object' && !isLosslessNumber(val)) {
       newSet.add(path)
       for (const [k, v] of Object.entries(val)) {
         collect(v, `${path}[${JSON.stringify(k)}]`)

@@ -146,9 +146,9 @@
       <span v-if="keyName" class="json-colon">: </span>
 
       <!-- 字符串值 -->
-      <span v-if="typeof val === 'string'" class="json-string">"{{ val }}"</span>
+      <span v-if="typeof val === 'string'" class="json-string">{{ JSON.stringify(val) }}</span>
       <!-- 数字值 -->
-      <span v-else-if="typeof val === 'number'" class="json-number">{{ val }}</span>
+      <span v-else-if="typeof val === 'number' || isLosslessNumber(val)" class="json-number">{{ String(val) }}</span>
       <!-- 布尔值 -->
       <span v-else-if="typeof val === 'boolean'" class="json-boolean">{{ val }}</span>
       <!-- null -->
@@ -164,6 +164,7 @@
 
 <script setup lang="ts">
 import { computed, inject, type Ref } from 'vue'
+import { isLosslessNumber } from 'lossless-json'
 
 const props = defineProps<{
   val: any
@@ -181,7 +182,7 @@ const lineNumbers = computed(() => lineNumberMap?.value.get(props.path))
 
 const isArray = computed(() => Array.isArray(props.val))
 const isObject = computed(() => {
-  return props.val !== null && typeof props.val === 'object' && !Array.isArray(props.val)
+  return props.val !== null && typeof props.val === 'object' && !Array.isArray(props.val) && !isLosslessNumber(props.val)
 })
 
 const keys = computed(() => {
