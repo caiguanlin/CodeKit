@@ -15,9 +15,9 @@ export const TOOL_CATEGORIES: CategoryItem[] = [
   },
   {
     key: 'codec',
-    name: '编解码/加密',
+    name: '加/解密',
     icon: 'KeyOutline',
-    description: 'Base64、URL、Unicode 与哈希散列计算'
+    description: 'Base64 编解码与哈希散列计算'
   },
   {
     key: 'generator',
@@ -66,13 +66,13 @@ export const TOOLS: ToolMetadata[] = [
   },
   {
     id: 'codec',
-    name: '编解码与哈希',
-    shortName: '编解码/哈希',
-    description: 'Base64、URL 编解码、Unicode、Hex 及 MD5/SHA 哈希计算',
+    name: '加/解密',
+    shortName: '加/解密',
+    description: 'Base64 编解码及 MD5/SHA 哈希计算',
     category: 'codec',
     icon: 'KeyOutline',
     accentColor: '#8b5cf6',
-    keywords: ['base64', 'url', 'encode', 'decode', 'md5', 'sha256', 'hash', 'hex', 'unicode'],
+    keywords: ['base64', 'encode', 'decode', 'md5', 'sha1', 'sha256', 'sha512', 'hash', '加密', '解密', '哈希', 'jiami', 'jiemi'],
     route: '/tools/codec',
     component: () => import('@/tools/codec/index.vue')
   },
