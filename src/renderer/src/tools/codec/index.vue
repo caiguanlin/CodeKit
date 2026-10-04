@@ -68,7 +68,7 @@
         </section>
       </div>
 
-      <div v-else class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl p-4 space-y-4 transition-colors">
+      <div v-else-if="activeTab === 'hash'" class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl p-4 space-y-4 transition-colors">
         <div class="flex items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <span class="text-xs text-[var(--text-secondary)]">大写输出:</span>
@@ -106,6 +106,8 @@
           </section>
         </div>
       </div>
+      <EncryptionPanel v-show="activeTab === 'aes'" mode="aes" @copy="copy" />
+      <EncryptionPanel v-show="activeTab === 'rsa'" mode="rsa" @copy="copy" />
     </div>
   </div>
 </template>
@@ -114,13 +116,16 @@
 import { computed, reactive, ref } from 'vue'
 import { useMessage, type MessageReactive } from 'naive-ui'
 import CryptoJS from 'crypto-js'
+import EncryptionPanel from './EncryptionPanel.vue'
 
 const message = useMessage()
 let copyMessage: MessageReactive | undefined
-const activeTab = ref<'base64' | 'hash'>('base64')
+const activeTab = ref<'base64' | 'hash' | 'aes' | 'rsa'>('base64')
 const modes = [
   { key: 'base64', label: 'Base64' },
-  { key: 'hash', label: '哈希 (MD5/SHA)' }
+  { key: 'hash', label: '哈希 (MD5/SHA)' },
+  { key: 'aes', label: 'AES' },
+  { key: 'rsa', label: 'RSA' }
 ] as const
 
 const base64Sections = [

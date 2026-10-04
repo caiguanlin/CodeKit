@@ -6,7 +6,6 @@ export type ToolCategory =
   | 'codec'
   | 'generator'
   | 'text'
-  | 'cron'
 
 export interface CategoryItem {
   key: ToolCategory

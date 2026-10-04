@@ -17,7 +17,7 @@ export const TOOL_CATEGORIES: CategoryItem[] = [
     key: 'codec',
     name: '加/解密',
     icon: 'KeyOutline',
-    description: 'Base64 编解码与哈希散列计算'
+    description: 'Base64、哈希与 AES / RSA 加解密'
   },
   {
     key: 'generator',
@@ -30,12 +30,6 @@ export const TOOL_CATEGORIES: CategoryItem[] = [
     name: '文本与正则',
     icon: 'DocumentTextOutline',
     description: '文本双栏 Diff 对比、正则表达式测试'
-  },
-  {
-    key: 'cron',
-    name: '任务调度',
-    icon: 'CalendarOutline',
-    description: 'Cron 表达式解析与未来时间预测'
   }
 ]
 
@@ -68,11 +62,11 @@ export const TOOLS: ToolMetadata[] = [
     id: 'codec',
     name: '加/解密',
     shortName: '加/解密',
-    description: 'Base64 编解码及 MD5/SHA 哈希计算',
+    description: 'Base64 编解码、MD5/SHA 哈希、AES/RSA 密钥生成与加解密',
     category: 'codec',
     icon: 'KeyOutline',
     accentColor: '#8b5cf6',
-    keywords: ['base64', 'encode', 'decode', 'md5', 'sha1', 'sha256', 'sha512', 'hash', '加密', '解密', '哈希', 'jiami', 'jiemi'],
+    keywords: ['base64', 'encode', 'decode', 'md5', 'sha1', 'sha256', 'sha512', 'hash', 'aes', 'rsa', '密钥', '公钥', '私钥', '对称', '非对称', '加密', '解密', '哈希', 'jiami', 'jiemi'],
     route: '/tools/codec',
     component: () => import('@/tools/codec/index.vue')
   },
@@ -92,13 +86,25 @@ export const TOOLS: ToolMetadata[] = [
     id: 'text',
     name: '文本处理与对比',
     shortName: '文本与Diff',
-    description: 'Monaco 双栏文本差异对比、正则表达式测试器、文本多维统计',
+    description: 'Monaco 双栏文本差异对比，支持多种语言与单栏混排',
     category: 'text',
     icon: 'DocumentTextOutline',
     accentColor: '#ec4899',
-    keywords: ['diff', 'compare', 'regex', 'zhengze', 'words', 'duibi'],
+    keywords: ['diff', 'compare', 'text', 'wenben', 'duibi', '文本', '对比'],
     route: '/tools/text',
     component: () => import('@/tools/text/index.vue')
+  },
+  {
+    id: 'regex',
+    name: '正则表达式',
+    shortName: '正则',
+    description: '正则实时匹配、捕获组查看、常用预设与 JavaScript / TypeScript 代码一键复制',
+    category: 'text',
+    icon: 'CodeSlashOutline',
+    accentColor: '#14b8a6',
+    keywords: ['regex', 'regexp', 'zhengze', '正则', '表达式', '匹配'],
+    route: '/tools/regex',
+    component: () => import('@/tools/regex/index.vue')
   },
   {
     id: 'naming',
@@ -111,18 +117,6 @@ export const TOOLS: ToolMetadata[] = [
     keywords: ['naming', 'case', 'camelcase', 'pascalcase', 'snake', 'kebab', 'constant', 'uppercase', 'mingming', '驼峰', '下划线', '中划线', '大写'],
     route: '/tools/naming',
     component: () => import('@/tools/naming/index.vue')
-  },
-  {
-    id: 'cron',
-    name: 'Cron 表达式解析',
-    shortName: 'Cron 表达式',
-    description: 'Cron 规则中文语义翻译、未来执行时间预测与常用模版',
-    category: 'cron',
-    icon: 'CalendarOutline',
-    accentColor: '#06b6d4',
-    keywords: ['cron', 'crontab', 'schedule', 'dingshirenwu', 'plan', 'time'],
-    route: '/tools/cron',
-    component: () => import('@/tools/cron/index.vue')
   }
 ]
 
